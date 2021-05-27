@@ -3,11 +3,11 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXCheckBox?>
 <?import com.jfoenix.controls.JFXComboBox?>
-<?import com.jfoenix.controls.JFXSlider?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXToggleButton?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
@@ -37,12 +37,12 @@
       </JFXTextField>
       <JFXComboBox fx:id="stateInput" focusColor="#00bca9" layoutX="105.0" layoutY="130.0" onAction="#stateChangeHandler" prefWidth="170.0" promptText="State Name" visibleRowCount="5" />
       <JFXComboBox fx:id="districtInput" focusColor="#00bca9" layoutX="296.0" layoutY="130.0" prefWidth="170.0" promptText="District Name" visibleRowCount="5" />
-      <Label layoutX="64.0" layoutY="187.0" text="Refresh Interval (sec):" textAlignment="CENTER">
+      <Label layoutX="111.0" layoutY="187.0" text="Refresh Interval (sec):" textAlignment="CENTER">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <JFXSlider fx:id="refreshInput" layoutX="251.0" layoutY="192.0" max="300.0" min="5.0" prefWidth="256.0" value="60.0" />
+      <Spinner fx:id="refreshInput" editable="true" layoutX="307.0" layoutY="186.0" />
       <Label layoutX="562.0" layoutY="84.0" text="Apply filters:" textAlignment="CENTER">
          <font>
             <Font name="Calibri" size="20.0" />
@@ -53,18 +53,18 @@
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
+      <Spinner fx:id="ageInput" editable="true" layoutX="705.0" layoutY="113.0" prefHeight="25.0" prefWidth="170.0" />
       <JFXCheckBox fx:id="vaccineCheckbox" checkedColor="#00add0" layoutX="578.0" layoutY="152.0" onAction="#vaccineChangeHandler" text="Vaccine Name">
          <font>
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
+      <JFXComboBox fx:id="vaccineInput" focusColor="#00add0" layoutX="705.0" layoutY="148.0" prefWidth="170.0" promptText="Vaccine Name" visibleRowCount="5" />
       <JFXCheckBox fx:id="doseCheckbox" checkedColor="#ee8b00" layoutX="578.0" layoutY="192.0" onAction="#doseChangeHandler" text="Dose Number">
          <font>
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
-      <JFXSlider fx:id="ageInput" layoutX="643.0" layoutY="118.0" prefHeight="14.0" prefWidth="233.0" value="18.0" />
-      <JFXComboBox fx:id="vaccineInput" focusColor="#00add0" layoutX="705.0" layoutY="148.0" prefWidth="170.0" promptText="Vaccine Name" visibleRowCount="5" />
       <Label layoutX="747.0" layoutY="191.0" text="1" textAlignment="CENTER">
          <font>
             <Font name="Calibri" size="20.0" />
@@ -82,11 +82,11 @@
             <Font size="15.0" />
          </font>
       </JFXButton>
-      <JFXButton fx:id="stopButton" buttonType="RAISED" defaultButton="true" layoutX="505.0" layoutY="247.0" onAction="#stopButtonHandler" ripplerFill="#8d0000" style="-fx-background-color: #cc6666;" text="Stop">
+      <JFXButton fx:id="stopButton" buttonType="RAISED" cancelButton="true" layoutX="505.0" layoutY="247.0" onAction="#stopButtonHandler" ripplerFill="#8d0000" style="-fx-background-color: #cc6666;" text="Stop">
          <font>
             <Font size="15.0" />
          </font>
       </JFXButton>
-      <TableView layoutX="10.0" layoutY="300.0" prefHeight="291.0" prefWidth="881.0" />
+      <TableView focusTraversable="false" layoutX="10.0" layoutY="300.0" prefHeight="291.0" prefWidth="881.0" />
    </children>
 </AnchorPane>

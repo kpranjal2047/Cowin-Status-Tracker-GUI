@@ -7,11 +7,15 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
- * @author kumar
+ * Main Class
+ * 
+ * @author Kumar Pranjal
  */
 public class CowinMain extends Application {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("CowinGUI.fxml"));
@@ -23,6 +27,8 @@ public class CowinMain extends Application {
     }
 
     /**
+     * Main function
+     * 
      * @param args the command line arguments
      */
     public static void main(String[] args) {
