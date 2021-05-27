@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXSlider?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXToggleButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cowinjava.CowinGUIController">
+   <children>
+      <Label layoutX="323.0" layoutY="14.0" text="Cowin Status Tracker" textAlignment="CENTER" underline="true">
+         <font>
+            <Font name="Calibri Italic" size="30.0" />
+         </font>
+      </Label>
+      <Label fx:id="pincodeLabel" layoutX="64.0" layoutY="84.0" text="Search by PIN Code" textAlignment="CENTER">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="districtLabel" layoutX="314.0" layoutY="84.0" text="Search by district name" textAlignment="CENTER">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <JFXToggleButton fx:id="pindistToggle" layoutX="235.0" layoutY="67.0" onAction="#pindistChangeHandler" prefWidth="74.0" text=" " toggleColor="#00bca9" unToggleColor="#ee5c5c" unToggleLineColor="#f5a7a7" />
+      <JFXTextField fx:id="pinInput" alignment="CENTER" focusColor="#ee5c5c" layoutX="214.0" layoutY="125.0" prefWidth="115.0" promptText="PIN Code">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </JFXTextField>
+      <JFXComboBox fx:id="stateInput" focusColor="#00bca9" layoutX="105.0" layoutY="130.0" onAction="#stateChangeHandler" prefWidth="170.0" promptText="State Name" visibleRowCount="5" />
+      <JFXComboBox fx:id="districtInput" focusColor="#00bca9" layoutX="296.0" layoutY="130.0" prefWidth="170.0" promptText="District Name" visibleRowCount="5" />
+      <Label layoutX="64.0" layoutY="187.0" text="Refresh Interval (sec):" textAlignment="CENTER">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <JFXSlider fx:id="refreshInput" layoutX="251.0" layoutY="192.0" max="300.0" min="5.0" prefWidth="256.0" value="60.0" />
+      <Label layoutX="562.0" layoutY="84.0" text="Apply filters:" textAlignment="CENTER">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <JFXCheckBox fx:id="ageCheckbox" checkedColor="#019401" layoutX="578.0" layoutY="115.0" onAction="#ageChangeHandler" text="Age">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </JFXCheckBox>
+      <JFXCheckBox fx:id="vaccineCheckbox" checkedColor="#00add0" layoutX="578.0" layoutY="152.0" onAction="#vaccineChangeHandler" text="Vaccine Name">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </JFXCheckBox>
+      <JFXCheckBox fx:id="doseCheckbox" checkedColor="#ee8b00" layoutX="578.0" layoutY="192.0" onAction="#doseChangeHandler" text="Dose Number">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </JFXCheckBox>
+      <JFXSlider fx:id="ageInput" layoutX="643.0" layoutY="118.0" prefHeight="14.0" prefWidth="233.0" value="18.0" />
+      <JFXComboBox fx:id="vaccineInput" focusColor="#00add0" layoutX="705.0" layoutY="148.0" prefWidth="170.0" promptText="Vaccine Name" visibleRowCount="5" />
+      <Label layoutX="747.0" layoutY="191.0" text="1" textAlignment="CENTER">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="827.0" layoutY="191.0" text="2" textAlignment="CENTER">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <JFXToggleButton fx:id="doseInput" layoutX="758.0" layoutY="173.0" prefWidth="74.0" text=" " toggleColor="#ff8800" toggleLineColor="#999999" unToggleColor="#ffbb00" />
+      <Separator layoutX="539.0" layoutY="67.0" orientation="VERTICAL" prefHeight="160.0" />
+      <JFXButton fx:id="startButton" buttonType="RAISED" defaultButton="true" layoutX="368.0" layoutY="247.0" onAction="#startButtonHandler" ripplerFill="#008d00" style="-fx-background-color: #66cc66;" text="Start">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </JFXButton>
+      <JFXButton fx:id="stopButton" buttonType="RAISED" defaultButton="true" layoutX="505.0" layoutY="247.0" onAction="#stopButtonHandler" ripplerFill="#8d0000" style="-fx-background-color: #cc6666;" text="Stop">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </JFXButton>
+      <TableView layoutX="10.0" layoutY="300.0" prefHeight="291.0" prefWidth="881.0" />
+   </children>
+</AnchorPane>
