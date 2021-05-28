@@ -48,19 +48,19 @@
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <JFXCheckBox fx:id="ageCheckbox" checkedColor="#019401" layoutX="578.0" layoutY="115.0" onAction="#ageChangeHandler" text="Age">
+      <JFXCheckBox fx:id="ageCheckbox" checkedColor="#019401" layoutX="578.0" layoutY="115.0" onAction="#ageCheckBoxHandler" text="Age">
          <font>
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
       <Spinner fx:id="ageInput" editable="true" layoutX="705.0" layoutY="113.0" prefHeight="25.0" prefWidth="170.0" />
-      <JFXCheckBox fx:id="vaccineCheckbox" checkedColor="#00add0" layoutX="578.0" layoutY="152.0" onAction="#vaccineChangeHandler" text="Vaccine Name">
+      <JFXCheckBox fx:id="vaccineCheckbox" checkedColor="#00add0" layoutX="578.0" layoutY="152.0" onAction="#vaccineCheckBoxHandler" text="Vaccine Name">
          <font>
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
       <JFXComboBox fx:id="vaccineInput" focusColor="#00add0" layoutX="705.0" layoutY="148.0" prefWidth="170.0" promptText="Vaccine Name" visibleRowCount="5" />
-      <JFXCheckBox fx:id="doseCheckbox" checkedColor="#ee8b00" layoutX="578.0" layoutY="192.0" onAction="#doseChangeHandler" text="Dose Number">
+      <JFXCheckBox fx:id="doseCheckbox" checkedColor="#ee8b00" layoutX="578.0" layoutY="192.0" onAction="#doseCheckBoxHandler" text="Dose Number">
          <font>
             <Font size="14.0" />
          </font>

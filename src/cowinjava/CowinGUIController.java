@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import com.jfoenix.controls.JFXButton;
@@ -18,17 +20,20 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import cowinjava.exceptions.InvalidInputException;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.paint.Paint;
 
 /**
- * FXML Controller class
+ * GUI FXML Controller class
  *
  * @author Kumar Pranjal
  */
@@ -77,6 +82,7 @@ public class CowinGUIController implements Initializable {
         } catch (IOException | ParseException e) {
         }
         fillStates();
+        fillVaccineNames();
         refreshInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(3, 300, 60, 1));
         ageInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 18, 1));
         pincodeLabel.setTextFill(Paint.valueOf("#ee5c5c"));
@@ -89,7 +95,7 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * This method modifies GUI when "search by pin/district" toggle is switched
+     * This method modifies GUI when "search by pin/district" toggle is switched.
      *
      * @param event ActionEvent object
      * @see #prepareSearchByPin()
@@ -127,44 +133,111 @@ public class CowinGUIController implements Initializable {
 
     /**
      * This method enables/disables age input when age checkbox is
-     * selected/deselected
+     * selected/deselected.
      *
      * @param event ActionEvent object
      */
     @FXML
-    private void ageChangeHandler(ActionEvent event) {
+    private void ageCheckBoxHandler(ActionEvent event) {
         ageInput.setDisable(!ageCheckbox.isSelected());
     }
 
     /**
      * This method enables/disables vaccine combo box when vaccine checkbox is
-     * selected/deselected
+     * selected/deselected.
      *
      * @param event ActionEvent object
      */
     @FXML
-    private void vaccineChangeHandler(ActionEvent event) {
+    private void vaccineCheckBoxHandler(ActionEvent event) {
         vaccineInput.setDisable(!vaccineCheckbox.isSelected());
     }
 
     /**
      * This method enables/disables dose number toggle when dose checkbox is
-     * selected/deselected
+     * selected/deselected.
      *
      * @param event ActionEvent object
      */
     @FXML
-    private void doseChangeHandler(ActionEvent event) {
+    private void doseCheckBoxHandler(ActionEvent event) {
         doseInput.setDisable(!doseCheckbox.isSelected());
     }
 
     /**
-     * This method is called when Start button is pressed
+     * This method is called when Start button is clicked.
      *
      * @param event ActionEvent object
      */
     @FXML
     private void startButtonHandler(ActionEvent event) {
+        int age;
+        if (ageCheckbox.isSelected()) {
+            try {
+                age = Integer.parseInt(ageInput.getEditor().getText());
+                if (age < 0 || age > 100) {
+                    throw new InvalidInputException();
+                }
+            } catch (NumberFormatException | InvalidInputException e) {
+                Alert a = new Alert(AlertType.ERROR, "Invalid age value");
+                a.setTitle("Cowin Status Tracker");
+                a.showAndWait();
+                ageInput.getValueFactory().setValue(18);
+                return;
+            }
+        } else {
+            age = 100;
+        }
+
+        String vaccinename;
+        if (vaccineCheckbox.isSelected()) {
+            vaccinename = vaccineInput.getValue();
+        } else {
+            vaccinename = "";
+        }
+
+        int dosenumber;
+        if (doseCheckbox.isSelected()) {
+            dosenumber = doseInput.isSelected() ? 2 : 1;
+        } else {
+            dosenumber = 0;
+        }
+
+        int duration;
+        try {
+            duration = Integer.parseInt(refreshInput.getEditor().getText());
+            if (duration < 3 || duration > 300) {
+                throw new InvalidInputException();
+            }
+        } catch (NumberFormatException | InvalidInputException e) {
+            Alert a = new Alert(AlertType.ERROR, "Invalid refresh duration value");
+            a.setTitle("Cowin Status Tracker");
+            a.showAndWait();
+            ageInput.getValueFactory().setValue(60);
+            return;
+        }
+
+        if (pindistToggle.isSelected()) {
+            String state = stateInput.getValue();
+            String district = districtInput.getValue();
+            long id = (long) ((JSONObject) map.get(state)).get(district);
+            scanByDistrict(id);
+        } else {
+            int pincode;
+            try {
+                pincode = Integer.parseInt(pinInput.getText());
+                if (pincode < 100000 || pincode > 999999) {
+                    throw new InvalidInputException();
+                }
+            } catch (NumberFormatException | InvalidInputException e) {
+                Alert a = new Alert(AlertType.ERROR, "Invalid Pincode");
+                a.setTitle("Cowin Status Tracker");
+                a.showAndWait();
+                return;
+            }
+            scanByPincode(pincode);
+        }
+
         startButton.setText("Running...");
         startButton.setDisable(true);
         stopButton.setDisable(false);
@@ -182,7 +255,7 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * This method is called when Stop button is pressed
+     * This method is called when Stop button is clicked.
      *
      * @param event ActionEvent object
      */
@@ -205,7 +278,7 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * Method for filling state names during initialization
+     * Method for filling state names during initialization.
      */
     private void fillStates() {
         ArrayList<String> list = new ArrayList<>();
@@ -215,10 +288,22 @@ public class CowinGUIController implements Initializable {
         }
         Collections.sort(list);
         stateInput.setItems(FXCollections.observableList(list));
+        stateInput.setValue(list.get(0));
+        fillDistricts(list.get(0));
     }
 
     /**
-     * Method for updating district names when new state is selected
+     * Method for filling vaccine names during initialization.
+     */
+    private void fillVaccineNames() {
+        List<String> list = Arrays.asList("Covishield", "Covaxin", "Sputnik V");
+        Collections.sort(list);
+        vaccineInput.setItems(FXCollections.observableList(list));
+        vaccineInput.setValue(list.get(0));
+    }
+
+    /**
+     * Method for updating district names when new state is selected.
      *
      * @param state New state name
      * @see #stateChangeHandler(ActionEvent)
@@ -232,5 +317,14 @@ public class CowinGUIController implements Initializable {
         }
         Collections.sort(list);
         districtInput.setItems(FXCollections.observableList(list));
+        districtInput.setValue(list.get(0));
+    }
+
+    private void scanByDistrict(long dist_id) {
+        // TODO
+    }
+
+    private void scanByPincode(int pincode) {
+        // TODO
     }
 }
