@@ -1,5 +1,6 @@
 package cowinjava;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +21,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import cowinjava.data.Center;
 import cowinjava.exceptions.InvalidInputException;
+import cowinjava.services.DistrictUpdateService;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,7 +33,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Paint;
+import javafx.util.Duration;
 
 /**
  * GUI FXML Controller class
@@ -56,21 +63,44 @@ public class CowinGUIController implements Initializable {
     @FXML
     private JFXCheckBox ageCheckbox;
     @FXML
-    private JFXCheckBox vaccineCheckbox;
-    @FXML
-    private JFXCheckBox doseCheckbox;
-    @FXML
     private Spinner<Integer> ageInput;
+    @FXML
+    private JFXCheckBox vaccineCheckbox;
     @FXML
     private JFXComboBox<String> vaccineInput;
     @FXML
+    private JFXCheckBox doseCheckbox;
+    @FXML
     private JFXToggleButton doseInput;
+    @FXML
+    private JFXCheckBox feeCheckbox;
+    @FXML
+    private JFXToggleButton feeInput;
     @FXML
     private JFXButton startButton;
     @FXML
     private JFXButton stopButton;
+    @FXML
+    private TableView<Center> resulttable;
+    @FXML
+    private TableColumn<Center, Long> agecolumn;
+    @FXML
+    private TableColumn<Center, String> vaccinecolumn;
+    @FXML
+    private TableColumn<Center, String> datecolumn;
+    @FXML
+    private TableColumn<Center, Long> dose1column;
+    @FXML
+    private TableColumn<Center, Long> dose2column;
+    @FXML
+    private TableColumn<Center, String> feetypecolumn;
+    @FXML
+    private TableColumn<Center, String> centernamecolumn;
+    @FXML
+    private TableColumn<Center, Long> pincodecolumn;
 
     private JSONObject map;
+    private DistrictUpdateService dist_service;
 
     /**
      * {@inheritDoc}
@@ -78,11 +108,13 @@ public class CowinGUIController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try (InputStream inputStream = getClass().getResourceAsStream("dist_map.json")) {
-            map = (JSONObject) new JSONParser().parse(new InputStreamReader(inputStream));
+            map = (JSONObject) new JSONParser().parse(new BufferedReader(new InputStreamReader(inputStream)));
         } catch (IOException | ParseException e) {
         }
+        dist_service = new DistrictUpdateService();
         fillStates();
         fillVaccineNames();
+        initializeTable();
         refreshInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(3, 300, 60, 1));
         ageInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 18, 1));
         pincodeLabel.setTextFill(Paint.valueOf("#ee5c5c"));
@@ -92,6 +124,7 @@ public class CowinGUIController implements Initializable {
         ageInput.setDisable(true);
         vaccineInput.setDisable(true);
         doseInput.setDisable(true);
+        feeInput.setDisable(true);
     }
 
     /**
@@ -165,12 +198,40 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
+     * This method enables/disables fee type toggle when fee checkbox is
+     * selected/deselected.
+     *
+     * @param event ActionEvent object
+     */
+    @FXML
+    private void feeCheckBoxHandler(ActionEvent event) {
+        feeInput.setDisable(!feeCheckbox.isSelected());
+    }
+
+    /**
      * This method is called when Start button is clicked.
      *
      * @param event ActionEvent object
      */
     @FXML
     private void startButtonHandler(ActionEvent event) {
+        startButton.setText("Running...");
+        startButton.setDisable(true);
+        stopButton.setDisable(false);
+        pindistToggle.setDisable(true);
+        stateInput.setDisable(true);
+        districtInput.setDisable(true);
+        pinInput.setDisable(true);
+        refreshInput.setDisable(true);
+        ageCheckbox.setDisable(true);
+        ageInput.setDisable(true);
+        vaccineCheckbox.setDisable(true);
+        vaccineInput.setDisable(true);
+        doseCheckbox.setDisable(true);
+        doseInput.setDisable(true);
+        feeCheckbox.setDisable(true);
+        feeInput.setDisable(true);
+
         int age;
         if (ageCheckbox.isSelected()) {
             try {
@@ -193,7 +254,7 @@ public class CowinGUIController implements Initializable {
         if (vaccineCheckbox.isSelected()) {
             vaccinename = vaccineInput.getValue();
         } else {
-            vaccinename = "";
+            vaccinename = null;
         }
 
         int dosenumber;
@@ -201,6 +262,13 @@ public class CowinGUIController implements Initializable {
             dosenumber = doseInput.isSelected() ? 2 : 1;
         } else {
             dosenumber = 0;
+        }
+
+        String feetype;
+        if (feeCheckbox.isSelected()) {
+            feetype = feeInput.isSelected() ? "Paid" : "Free";
+        } else {
+            feetype = null;
         }
 
         int duration;
@@ -221,7 +289,7 @@ public class CowinGUIController implements Initializable {
             String state = stateInput.getValue();
             String district = districtInput.getValue();
             long id = (long) ((JSONObject) map.get(state)).get(district);
-            scanByDistrict(id);
+            scanByDistrict(id, duration, age, vaccinename, dosenumber, feetype);
         } else {
             int pincode;
             try {
@@ -235,23 +303,8 @@ public class CowinGUIController implements Initializable {
                 a.showAndWait();
                 return;
             }
-            scanByPincode(pincode);
+            scanByPincode(pincode, duration, age, vaccinename, dosenumber, feetype);
         }
-
-        startButton.setText("Running...");
-        startButton.setDisable(true);
-        stopButton.setDisable(false);
-        pindistToggle.setDisable(true);
-        stateInput.setDisable(true);
-        districtInput.setDisable(true);
-        pinInput.setDisable(true);
-        refreshInput.setDisable(true);
-        ageCheckbox.setDisable(true);
-        ageInput.setDisable(true);
-        vaccineCheckbox.setDisable(true);
-        vaccineInput.setDisable(true);
-        doseCheckbox.setDisable(true);
-        doseInput.setDisable(true);
     }
 
     /**
@@ -261,6 +314,12 @@ public class CowinGUIController implements Initializable {
      */
     @FXML
     private void stopButtonHandler(ActionEvent event) {
+        if (pindistToggle.isSelected()) {
+            dist_service.cancel();
+        } else {
+
+        }
+
         startButton.setText("Start");
         startButton.setDisable(false);
         stopButton.setDisable(true);
@@ -275,10 +334,14 @@ public class CowinGUIController implements Initializable {
         vaccineInput.setDisable(!vaccineCheckbox.isSelected());
         doseCheckbox.setDisable(false);
         doseInput.setDisable(!doseCheckbox.isSelected());
+        feeCheckbox.setDisable(false);
+        feeInput.setDisable(!feeInput.isSelected());
     }
 
     /**
      * Method for filling state names during initialization.
+     * 
+     * @see #fillDistricts(String)
      */
     private void fillStates() {
         ArrayList<String> list = new ArrayList<>();
@@ -320,11 +383,35 @@ public class CowinGUIController implements Initializable {
         districtInput.setValue(list.get(0));
     }
 
-    private void scanByDistrict(long dist_id) {
-        // TODO
+    private void initializeTable() {
+        resulttable.setPlaceholder(new Label("No vaccination centers found!"));
+        agecolumn.setCellValueFactory(new PropertyValueFactory<>("minage"));
+        vaccinecolumn.setCellValueFactory(new PropertyValueFactory<>("vaccinename"));
+        datecolumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        dose1column.setCellValueFactory(new PropertyValueFactory<>("dose1count"));
+        dose2column.setCellValueFactory(new PropertyValueFactory<>("dose2count"));
+        feetypecolumn.setCellValueFactory(new PropertyValueFactory<>("feetype"));
+        centernamecolumn.setCellValueFactory(new PropertyValueFactory<>("centername"));
+        pincodecolumn.setCellValueFactory(new PropertyValueFactory<>("pincode"));
     }
 
-    private void scanByPincode(int pincode) {
+    private void scanByDistrict(long dist_id, int duration, int age, String vaccinename, int dosenumber,
+            String feetype) {
+        dist_service.setDist_id(dist_id);
+        dist_service.setPeriod(Duration.seconds(duration));
+        dist_service.setAge(age);
+        dist_service.setVaccinename(vaccinename);
+        dist_service.setDosenumber(dosenumber);
+        dist_service.setFeetype(feetype);
+        dist_service.setOnSucceeded(e -> {
+            ArrayList<Center> availablecenters = dist_service.getValue();
+            resulttable.getItems().clear();
+            resulttable.getItems().addAll(availablecenters);
+        });
+        dist_service.start();
+    }
+
+    private void scanByPincode(int pincode, int duration, int age, String vaccinename, int dosenumber, String feetype) {
         // TODO
     }
 }

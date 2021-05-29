@@ -3,49 +3,49 @@ package cowinjava.exceptions;
 import java.io.IOException;
 
 /**
- * Thrown to indicate that some input has got illegal or inappropriate value.
+ * Thrown to indicate miscommunication between app and server.
  *
  * @author Kumar Pranjal
  */
-public class InvalidInputException extends IOException {
+public class DataCommunicationException extends IOException {
 
     /**
-     * Constructs a new InvalidInputException with no detail message.
+     * Constructs a new DataCommunicationException with no detail message.
      */
-    public InvalidInputException() {
+    public DataCommunicationException() {
         super();
     }
 
     /**
-     * Constructs a new InvalidInputException with the specified detail message.
+     * Constructs a new DataCommunicationException with the specified detail message.
      *
      * @param message the detail message
      */
-    public InvalidInputException(String message) {
+    public DataCommunicationException(String message) {
         super(message);
     }
 
     /**
-     * Constructs a new InvalidInputException with the specified cause and a detail
+     * Constructs a new DataCommunicationException with the specified cause and a detail
      * message of <tt>(cause==null ? null : cause.toString())</tt> (which typically
      * contains the class and detail message of <tt>cause</tt>).
      *
      * @param cause the cause (A <tt>null</tt> value is permitted, and indicates
      *              that the cause is nonexistent or unknown)
      */
-    public InvalidInputException(Throwable cause) {
+    public DataCommunicationException(Throwable cause) {
         super(cause);
     }
 
     /**
-     * Constructs a new InvalidInputException with the specified detail message and
+     * Constructs a new DataCommunicationException with the specified detail message and
      * cause.
      *
      * @param message the detail message
      * @param cause   the cause (A <tt>null</tt> value is permitted, and indicates
      *                that the cause is nonexistent or unknown)
      */
-    public InvalidInputException(String message, Throwable cause) {
+    public DataCommunicationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

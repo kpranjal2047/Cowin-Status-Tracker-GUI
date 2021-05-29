@@ -8,11 +8,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cowinjava.CowinGUIController">
+<AnchorPane prefHeight="671.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cowinjava.CowinGUIController">
    <children>
       <Label layoutX="323.0" layoutY="14.0" text="Cowin Status Tracker" textAlignment="CENTER" underline="true">
          <font>
@@ -30,19 +31,19 @@
          </font>
       </Label>
       <JFXToggleButton fx:id="pindistToggle" layoutX="235.0" layoutY="67.0" onAction="#pindistChangeHandler" prefWidth="74.0" text=" " toggleColor="#00bca9" unToggleColor="#ee5c5c" unToggleLineColor="#f5a7a7" />
-      <JFXTextField fx:id="pinInput" alignment="CENTER" focusColor="#ee5c5c" layoutX="214.0" layoutY="125.0" prefWidth="115.0" promptText="PIN Code">
+      <JFXTextField fx:id="pinInput" alignment="CENTER" focusColor="#ee5c5c" layoutX="214.0" layoutY="130.0" prefWidth="115.0" promptText="PIN Code">
          <font>
             <Font size="14.0" />
          </font>
       </JFXTextField>
-      <JFXComboBox fx:id="stateInput" focusColor="#00bca9" layoutX="105.0" layoutY="130.0" onAction="#stateChangeHandler" prefWidth="170.0" promptText="State Name" visibleRowCount="5" />
-      <JFXComboBox fx:id="districtInput" focusColor="#00bca9" layoutX="296.0" layoutY="130.0" prefWidth="170.0" promptText="District Name" visibleRowCount="5" />
-      <Label layoutX="111.0" layoutY="187.0" text="Refresh Interval (sec):" textAlignment="CENTER">
+      <JFXComboBox fx:id="stateInput" focusColor="#00bca9" layoutX="105.0" layoutY="135.0" onAction="#stateChangeHandler" prefWidth="170.0" promptText="State Name" visibleRowCount="5" />
+      <JFXComboBox fx:id="districtInput" focusColor="#00bca9" layoutX="296.0" layoutY="135.0" prefWidth="170.0" promptText="District Name" visibleRowCount="5" />
+      <Label layoutX="111.0" layoutY="215.0" text="Refresh Interval (sec):" textAlignment="CENTER">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Spinner fx:id="refreshInput" editable="true" layoutX="307.0" layoutY="186.0" />
+      <Spinner fx:id="refreshInput" editable="true" layoutX="307.0" layoutY="214.0" />
       <Label layoutX="562.0" layoutY="84.0" text="Apply filters:" textAlignment="CENTER">
          <font>
             <Font name="Calibri" size="20.0" />
@@ -59,7 +60,7 @@
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
-      <JFXComboBox fx:id="vaccineInput" focusColor="#00add0" layoutX="705.0" layoutY="148.0" prefWidth="170.0" promptText="Vaccine Name" visibleRowCount="5" />
+      <JFXComboBox fx:id="vaccineInput" focusColor="#00add0" layoutX="705.0" layoutY="148.0" prefWidth="170.0" visibleRowCount="5" />
       <JFXCheckBox fx:id="doseCheckbox" checkedColor="#ee8b00" layoutX="578.0" layoutY="192.0" onAction="#doseCheckBoxHandler" text="Dose Number">
          <font>
             <Font size="14.0" />
@@ -76,17 +77,46 @@
          </font>
       </Label>
       <JFXToggleButton fx:id="doseInput" layoutX="758.0" layoutY="173.0" prefWidth="74.0" text=" " toggleColor="#ff8800" toggleLineColor="#999999" unToggleColor="#ffbb00" />
-      <Separator layoutX="539.0" layoutY="67.0" orientation="VERTICAL" prefHeight="160.0" />
-      <JFXButton fx:id="startButton" buttonType="RAISED" defaultButton="true" layoutX="368.0" layoutY="247.0" onAction="#startButtonHandler" ripplerFill="#008d00" style="-fx-background-color: #66cc66;" text="Start">
+      <JFXCheckBox fx:id="feeCheckbox" checkedColor="#a400eb" layoutX="578.0" layoutY="231.0" onAction="#feeCheckBoxHandler" text="Fee Type">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </JFXCheckBox>
+      <Label layoutX="720.0" layoutY="230.0" text="Free" textAlignment="CENTER">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="827.0" layoutY="230.0" text="Paid" textAlignment="CENTER">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <JFXToggleButton fx:id="feeInput" layoutX="758.0" layoutY="212.0" prefWidth="74.0" text=" " toggleColor="#b211eb" toggleLineColor="#999999" unToggleColor="#dd11eb" />
+      <Separator layoutX="539.0" layoutY="67.0" orientation="VERTICAL" prefHeight="200.0" />
+      <JFXButton fx:id="startButton" buttonType="RAISED" defaultButton="true" layoutX="368.0" layoutY="288.0" onAction="#startButtonHandler" ripplerFill="#008d00" style="-fx-background-color: #66cc66;" text="Start">
          <font>
             <Font size="15.0" />
          </font>
       </JFXButton>
-      <JFXButton fx:id="stopButton" buttonType="RAISED" cancelButton="true" layoutX="505.0" layoutY="247.0" onAction="#stopButtonHandler" ripplerFill="#8d0000" style="-fx-background-color: #cc6666;" text="Stop">
+      <JFXButton fx:id="stopButton" buttonType="RAISED" cancelButton="true" layoutX="505.0" layoutY="288.0" onAction="#stopButtonHandler" ripplerFill="#8d0000" style="-fx-background-color: #cc6666;" text="Stop">
          <font>
             <Font size="15.0" />
          </font>
       </JFXButton>
-      <TableView focusTraversable="false" layoutX="10.0" layoutY="300.0" prefHeight="291.0" prefWidth="881.0" />
+      <TableView fx:id="resulttable" focusTraversable="false" layoutX="10.0" layoutY="337.0" prefHeight="323.0" prefWidth="881.0">
+         <columns>
+            <TableColumn fx:id="agecolumn" editable="false" text="Minimum Age" />
+            <TableColumn fx:id="vaccinecolumn" editable="false" text="Vaccine Name" />
+            <TableColumn fx:id="datecolumn" editable="false" text="Date" />
+            <TableColumn fx:id="dose1column" editable="false" text="Dose 1 Count" />
+            <TableColumn fx:id="dose2column" editable="false" text="Dose 2 Count" />
+            <TableColumn fx:id="feetypecolumn" editable="false" text="Fee Type" />
+            <TableColumn fx:id="centernamecolumn" editable="false" text="Center Name" />
+            <TableColumn fx:id="pincodecolumn" editable="false" text="Pincode" />
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy></TableView>
    </children>
 </AnchorPane>
