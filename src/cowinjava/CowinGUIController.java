@@ -21,7 +21,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import cowinjava.data.Center;
+import cowinjava.output.Center;
 import cowinjava.exceptions.InvalidInputException;
 import cowinjava.services.DistrictUpdateService;
 import javafx.collections.FXCollections;
@@ -316,6 +316,7 @@ public class CowinGUIController implements Initializable {
     private void stopButtonHandler(ActionEvent event) {
         if (pindistToggle.isSelected()) {
             dist_service.cancel();
+            dist_service.reset();
         } else {
 
         }
@@ -335,7 +336,7 @@ public class CowinGUIController implements Initializable {
         doseCheckbox.setDisable(false);
         doseInput.setDisable(!doseCheckbox.isSelected());
         feeCheckbox.setDisable(false);
-        feeInput.setDisable(!feeInput.isSelected());
+        feeInput.setDisable(!feeCheckbox.isSelected());
     }
 
     /**

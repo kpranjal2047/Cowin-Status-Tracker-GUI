@@ -16,7 +16,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import cowinjava.data.Center;
+import cowinjava.output.Center;
 import cowinjava.exceptions.DataCommunicationException;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
