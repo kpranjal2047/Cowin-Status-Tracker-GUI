@@ -1,18 +1,35 @@
 package cowinjava.output;
 
+/**
+ * Class to represent vaccination centers.
+ * 
+ * @author Kumar Pranjal
+ */
 public class Center {
 
-    private long minage;
-    private String vaccinename;
-    private String date;
-    private long dose1count;
-    private long dose2count;
-    private String feetype;
-    private String centername;
-    private long pincode;
+    private final long minage;
+    private final String vaccinename;
+    private final String date;
+    private final long dose1count;
+    private final long dose2count;
+    private final String feetype;
+    private final String centername;
+    private final long pincode;
 
-    public Center(long minage, String vaccinename, String date, long dose1count, long dose2count, String feetype,
-            String centername, long pincode) {
+    /**
+     * Constructor initializing all necessary details.
+     * 
+     * @param minage      Minimum age
+     * @param vaccinename Available vaccine name
+     * @param date        Session date
+     * @param dose1count  Dose 1 availability
+     * @param dose2count  Dose 2 availability
+     * @param feetype     Fee type (Free / Paid)
+     * @param centername  Center name
+     * @param pincode     Center pincode
+     */
+    public Center(final long minage, final String vaccinename, final String date, final long dose1count,
+            final long dose2count, final String feetype, final String centername, final long pincode) {
         this.minage = minage;
         this.vaccinename = vaccinename;
         this.date = date;
@@ -27,64 +44,32 @@ public class Center {
         return minage;
     }
 
-    public void setMinage(long minage) {
-        this.minage = minage;
-    }
-
     public String getVaccinename() {
         return vaccinename;
-    }
-
-    public void setVaccinename(String vaccinename) {
-        this.vaccinename = vaccinename;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
     public long getDose1count() {
         return dose1count;
-    }
-
-    public void setDose1count(long dose1count) {
-        this.dose1count = dose1count;
     }
 
     public long getDose2count() {
         return dose2count;
     }
 
-    public void setDose2count(long dose2count) {
-        this.dose2count = dose2count;
-    }
-
     public String getFeetype() {
         return feetype;
-    }
-
-    public void setFeetype(String feetype) {
-        this.feetype = feetype;
     }
 
     public String getCentername() {
         return centername;
     }
 
-    public void setCentername(String centername) {
-        this.centername = centername;
-    }
-
     public long getPincode() {
         return pincode;
-    }
-
-    public void setPincode(long pincode) {
-        this.pincode = pincode;
     }
 
 }

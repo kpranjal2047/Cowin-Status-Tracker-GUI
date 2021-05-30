@@ -21,43 +21,43 @@ import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 
 /**
- * Background update service which uses district id to find vaccination centers.
+ * Background update service which uses pincode to find vaccination centers.
  * 
  * @author Kumar Pranjal
  */
-public class DistrictUpdateService extends ScheduledService<ArrayList<Center>> {
+public class PincodeUpdateService extends ScheduledService<ArrayList<Center>> {
 
-    private long dist_id;
+    private int pin_code;
     private int age;
     private String vaccinename;
     private int dosenumber;
     private String feetype;
-    private static final String home = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=%d&date=%s";
-    private static DistrictUpdateService service = null;
+    private static final String home = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=%d&date=%s";
+    private static PincodeUpdateService service = null;
 
     /**
      * Private constructor to prevent multiple instance creation.
      */
-    private DistrictUpdateService() {
+    private PincodeUpdateService() {
     }
 
     /**
      * This methods returns any existing update service or else creates and returns
      * a new one.
      */
-    public static DistrictUpdateService getDistrictUpdateService() {
+    public static PincodeUpdateService getPincodeUpdateService() {
         if (service == null) {
-            service = new DistrictUpdateService();
+            service = new PincodeUpdateService();
         }
         return service;
     }
 
-    public long getDist_id() {
-        return dist_id;
+    public int getPin_code() {
+        return pin_code;
     }
 
-    public void setDist_id(final long dist_id) {
-        this.dist_id = dist_id;
+    public void setPin_code(final int pin_code) {
+        this.pin_code = pin_code;
     }
 
     public int getAge() {
@@ -107,7 +107,7 @@ public class DistrictUpdateService extends ScheduledService<ArrayList<Center>> {
                 final LocalDate date = LocalDate.now();
                 final String curdate = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                 try {
-                    final URL url = new URL(String.format(home, dist_id, curdate));
+                    final URL url = new URL(String.format(home, pin_code, curdate));
                     final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
                     con.setRequestProperty("User-Agent", "Mozilla/5.0");
                     final int status = con.getResponseCode();

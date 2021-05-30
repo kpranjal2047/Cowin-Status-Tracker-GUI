@@ -3,49 +3,50 @@ package cowinjava.exceptions;
 import java.io.IOException;
 
 /**
- * Thrown to indicate miscommunication between app and server.
+ * Thrown to indicate a miscommunication between the app and the server.
  *
  * @author Kumar Pranjal
  */
 public class DataCommunicationException extends IOException {
 
     /**
-     * Constructs a new DataCommunicationException with no detail message.
+     * Constructs a {@code DataCommunicationException} with no detail message.
      */
     public DataCommunicationException() {
         super();
     }
 
     /**
-     * Constructs a new DataCommunicationException with the specified detail message.
+     * Constructs a {@code DataCommunicationException} with the specified detail
+     * message.
      *
      * @param message the detail message
      */
-    public DataCommunicationException(String message) {
+    public DataCommunicationException(final String message) {
         super(message);
     }
 
     /**
-     * Constructs a new DataCommunicationException with the specified cause and a detail
-     * message of <tt>(cause==null ? null : cause.toString())</tt> (which typically
-     * contains the class and detail message of <tt>cause</tt>).
+     * Constructs a {@code DataCommunicationException} with the specified cause and
+     * a detail message of {@code (cause==null ? null : cause.toString())} (which
+     * typically contains the class and detail message of {@code cause}).
      *
-     * @param cause the cause (A <tt>null</tt> value is permitted, and indicates
-     *              that the cause is nonexistent or unknown)
+     * @param cause the cause (A {@code null} value is permitted, and indicates that
+     *              the cause is nonexistent or unknown)
      */
-    public DataCommunicationException(Throwable cause) {
+    public DataCommunicationException(final Throwable cause) {
         super(cause);
     }
 
     /**
-     * Constructs a new DataCommunicationException with the specified detail message and
-     * cause.
+     * Constructs a {@code DataCommunicationException} with the specified detail
+     * message and cause.
      *
      * @param message the detail message
-     * @param cause   the cause (A <tt>null</tt> value is permitted, and indicates
+     * @param cause   the cause (A {@code null} value is permitted, and indicates
      *                that the cause is nonexistent or unknown)
      */
-    public DataCommunicationException(String message, Throwable cause) {
+    public DataCommunicationException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

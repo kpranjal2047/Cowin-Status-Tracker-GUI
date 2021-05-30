@@ -15,17 +15,17 @@
 
 <AnchorPane prefHeight="671.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cowinjava.CowinGUIController">
    <children>
-      <Label layoutX="323.0" layoutY="14.0" text="Cowin Status Tracker" textAlignment="CENTER" underline="true">
+      <Label layoutX="323.0" layoutY="14.0" text="Cowin Status Tracker" underline="true">
          <font>
             <Font name="Calibri Italic" size="30.0" />
          </font>
       </Label>
-      <Label fx:id="pincodeLabel" layoutX="64.0" layoutY="84.0" text="Search by PIN Code" textAlignment="CENTER">
+      <Label fx:id="pincodeLabel" layoutX="64.0" layoutY="84.0" text="Search by PIN Code">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Label fx:id="districtLabel" layoutX="314.0" layoutY="84.0" text="Search by district name" textAlignment="CENTER">
+      <Label fx:id="districtLabel" layoutX="314.0" layoutY="84.0" text="Search by district name">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
@@ -38,13 +38,13 @@
       </JFXTextField>
       <JFXComboBox fx:id="stateInput" focusColor="#00bca9" layoutX="105.0" layoutY="135.0" onAction="#stateChangeHandler" prefWidth="170.0" promptText="State Name" visibleRowCount="5" />
       <JFXComboBox fx:id="districtInput" focusColor="#00bca9" layoutX="296.0" layoutY="135.0" prefWidth="170.0" promptText="District Name" visibleRowCount="5" />
-      <Label layoutX="111.0" layoutY="215.0" text="Refresh Interval (sec):" textAlignment="CENTER">
+      <Label layoutX="111.0" layoutY="215.0" text="Refresh Interval (sec):">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
       <Spinner fx:id="refreshInput" editable="true" layoutX="307.0" layoutY="214.0" />
-      <Label layoutX="562.0" layoutY="84.0" text="Apply filters:" textAlignment="CENTER">
+      <Label layoutX="562.0" layoutY="84.0" text="Apply filters:">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
@@ -66,12 +66,12 @@
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
-      <Label layoutX="747.0" layoutY="191.0" text="1" textAlignment="CENTER">
+      <Label layoutX="747.0" layoutY="191.0" text="1">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Label layoutX="827.0" layoutY="191.0" text="2" textAlignment="CENTER">
+      <Label layoutX="827.0" layoutY="191.0" text="2">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
@@ -82,38 +82,43 @@
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
-      <Label layoutX="720.0" layoutY="230.0" text="Free" textAlignment="CENTER">
+      <Label layoutX="720.0" layoutY="230.0" text="Free">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Label layoutX="827.0" layoutY="230.0" text="Paid" textAlignment="CENTER">
+      <Label layoutX="827.0" layoutY="230.0" text="Paid">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
       <JFXToggleButton fx:id="feeInput" layoutX="758.0" layoutY="212.0" prefWidth="74.0" text=" " toggleColor="#b211eb" toggleLineColor="#999999" unToggleColor="#dd11eb" />
       <Separator layoutX="539.0" layoutY="67.0" orientation="VERTICAL" prefHeight="200.0" />
-      <JFXButton fx:id="startButton" buttonType="RAISED" defaultButton="true" layoutX="368.0" layoutY="288.0" onAction="#startButtonHandler" ripplerFill="#008d00" style="-fx-background-color: #66cc66;" text="Start">
+      <JFXButton fx:id="startButton" buttonType="RAISED" defaultButton="true" layoutX="357.0" layoutY="288.0" onAction="#startButtonHandler" ripplerFill="#008d00" style="-fx-background-color: #66cc66;" text="Start">
          <font>
             <Font size="15.0" />
          </font>
       </JFXButton>
-      <JFXButton fx:id="stopButton" buttonType="RAISED" cancelButton="true" layoutX="505.0" layoutY="288.0" onAction="#stopButtonHandler" ripplerFill="#8d0000" style="-fx-background-color: #cc6666;" text="Stop">
+      <JFXButton fx:id="stopButton" buttonType="RAISED" cancelButton="true" layoutX="494.0" layoutY="288.0" onAction="#stopButtonHandler" ripplerFill="#8d0000" style="-fx-background-color: #cc6666;" text="Stop">
          <font>
             <Font size="15.0" />
          </font>
       </JFXButton>
-      <TableView fx:id="resulttable" focusTraversable="false" layoutX="10.0" layoutY="337.0" prefHeight="323.0" prefWidth="881.0">
+      <Label fx:id="statusLabel" alignment="CENTER" layoutX="347.0" layoutY="336.0" AnchorPane.leftAnchor="347.0" AnchorPane.rightAnchor="347.0">
+         <font>
+            <Font name="Calibri" size="16.0" />
+         </font>
+      </Label>
+      <TableView fx:id="resultTable" focusTraversable="false" layoutX="10.0" layoutY="366.0" prefHeight="294.0" prefWidth="881.0">
          <columns>
-            <TableColumn fx:id="agecolumn" editable="false" text="Minimum Age" />
-            <TableColumn fx:id="vaccinecolumn" editable="false" text="Vaccine Name" />
-            <TableColumn fx:id="datecolumn" editable="false" text="Date" />
-            <TableColumn fx:id="dose1column" editable="false" text="Dose 1 Count" />
-            <TableColumn fx:id="dose2column" editable="false" text="Dose 2 Count" />
-            <TableColumn fx:id="feetypecolumn" editable="false" text="Fee Type" />
-            <TableColumn fx:id="centernamecolumn" editable="false" text="Center Name" />
-            <TableColumn fx:id="pincodecolumn" editable="false" text="Pincode" />
+            <TableColumn fx:id="ageColumn" editable="false" text="Minimum Age" />
+            <TableColumn fx:id="vaccineColumn" editable="false" text="Vaccine Name" />
+            <TableColumn fx:id="dateColumn" editable="false" text="Date" />
+            <TableColumn fx:id="dose1Column" editable="false" text="Dose 1 Count" />
+            <TableColumn fx:id="dose2Column" editable="false" text="Dose 2 Count" />
+            <TableColumn fx:id="feeTypeColumn" editable="false" text="Fee Type" />
+            <TableColumn fx:id="centerNameColumn" editable="false" text="Center Name" />
+            <TableColumn fx:id="pincodeColumn" editable="false" text="Pincode" />
          </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
