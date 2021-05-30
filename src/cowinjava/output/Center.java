@@ -26,7 +26,7 @@ public class Center {
      * @param dose2count  Dose 2 availability
      * @param feetype     Fee type (Free / Paid)
      * @param centername  Center name
-     * @param pincode     Center pincode
+     * @param pincode     Center pin code
      */
     public Center(final long minage, final String vaccinename, final String date, final long dose1count,
             final long dose2count, final String feetype, final String centername, final long pincode) {

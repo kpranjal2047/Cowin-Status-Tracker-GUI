@@ -17,7 +17,8 @@ public class InvalidInputException extends IOException {
     }
 
     /**
-     * Constructs an {@code InvalidInputException} with the specified detail message.
+     * Constructs an {@code InvalidInputException} with the specified detail
+     * message.
      *
      * @param message the detail message
      */
@@ -26,9 +27,9 @@ public class InvalidInputException extends IOException {
     }
 
     /**
-     * Constructs an {@code InvalidInputException} with the specified cause and a detail
-     * message of {@code (cause==null ? null : cause.toString())} (which typically
-     * contains the class and detail message of {@code cause}).
+     * Constructs an {@code InvalidInputException} with the specified cause and a
+     * detail message of {@code (cause==null ? null : cause.toString())} (which
+     * typically contains the class and detail message of {@code cause}).
      *
      * @param cause the cause (A {@code null} value is permitted, and indicates that
      *              the cause is nonexistent or unknown)
@@ -38,8 +39,8 @@ public class InvalidInputException extends IOException {
     }
 
     /**
-     * Constructs an {@code InvalidInputException} with the specified detail message and
-     * cause.
+     * Constructs an {@code InvalidInputException} with the specified detail message
+     * and cause.
      *
      * @param message the detail message
      * @param cause   the cause (A {@code null} value is permitted, and indicates

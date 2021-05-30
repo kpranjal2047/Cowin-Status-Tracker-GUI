@@ -445,10 +445,10 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * Method for getting the results using pincode. The methods starts a background
-     * service for update checking and displays the result whenever a vaccination
-     * slot is found. The background service runs indefinitely until stopped by
-     * 'Stop' button.
+     * Method for getting the results using pin code. The methods starts a
+     * background service for update checking and displays the result whenever a
+     * vaccination slot is found. The background service runs indefinitely until
+     * stopped by 'Stop' button.
      * 
      * @param pincode     Pin Code
      * @param duration    Refresh interval duration

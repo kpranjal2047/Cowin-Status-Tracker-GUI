@@ -21,7 +21,7 @@ import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 
 /**
- * Background update service which uses pincode to find vaccination centers.
+ * Background update service which uses pin code to find vaccination centers.
  * 
  * @author Kumar Pranjal
  */
@@ -32,7 +32,7 @@ public class PincodeUpdateService extends ScheduledService<ArrayList<Center>> {
     private String vaccinename;
     private int dosenumber;
     private String feetype;
-    private static final String home = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=%d&date=%s";
+    private static final String HOME = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=%d&date=%s";
     private static PincodeUpdateService service = null;
 
     /**
@@ -44,6 +44,8 @@ public class PincodeUpdateService extends ScheduledService<ArrayList<Center>> {
     /**
      * This methods returns any existing update service or else creates and returns
      * a new one.
+     * 
+     * @return {@code PincodeUpdateService} object
      */
     public static PincodeUpdateService getPincodeUpdateService() {
         if (service == null) {
@@ -107,18 +109,19 @@ public class PincodeUpdateService extends ScheduledService<ArrayList<Center>> {
                 final LocalDate date = LocalDate.now();
                 final String curdate = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                 try {
-                    final URL url = new URL(String.format(home, pin_code, curdate));
+                    final URL url = new URL(String.format(HOME, pin_code, curdate));
                     final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
                     con.setRequestProperty("User-Agent", "Mozilla/5.0");
                     final int status = con.getResponseCode();
                     if (status == HttpsURLConnection.HTTP_OK) {
-                        final BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                        String inputLine;
-                        final StringBuffer content = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null) {
-                            content.append(inputLine);
+                        final StringBuffer content;
+                        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                            String inputLine;
+                            content = new StringBuffer();
+                            while ((inputLine = in.readLine()) != null) {
+                                content.append(inputLine);
+                            }
                         }
-                        in.close();
                         final String jsonstr = content.toString();
                         final JSONObject json = (JSONObject) new JSONParser().parse(jsonstr);
                         final JSONArray centers = (JSONArray) json.get("centers");
@@ -152,7 +155,6 @@ public class PincodeUpdateService extends ScheduledService<ArrayList<Center>> {
                     }
                     con.disconnect();
                 } catch (IOException | ParseException e) {
-                    e.printStackTrace();
                 }
                 return out;
             }
