@@ -54,43 +54,12 @@ public class PincodeUpdateService extends ScheduledService<ArrayList<Center>> {
         return service;
     }
 
-    public int getPin_code() {
-        return pin_code;
-    }
-
-    public void setPin_code(final int pin_code) {
-        this.pin_code = pin_code;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(final int age) {
+    public void setValues(final int pincode, final int age, final String vaccinename, final int dosenumber,
+            final String feetype) {
+        this.pin_code = pincode;
         this.age = age;
-    }
-
-    public String getVaccinename() {
-        return vaccinename;
-    }
-
-    public void setVaccinename(final String vaccinename) {
         this.vaccinename = vaccinename;
-    }
-
-    public int getDosenumber() {
-        return dosenumber;
-    }
-
-    public void setDosenumber(final int dosenumber) {
         this.dosenumber = dosenumber;
-    }
-
-    public String getFeetype() {
-        return feetype;
-    }
-
-    public void setFeetype(final String feetype) {
         this.feetype = feetype;
     }
 

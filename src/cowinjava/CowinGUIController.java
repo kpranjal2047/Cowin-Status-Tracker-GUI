@@ -25,8 +25,10 @@ import org.json.simple.parser.ParseException;
 import cowinjava.exceptions.InvalidInputException;
 import cowinjava.output.Center;
 import cowinjava.services.DistrictUpdateService;
+import cowinjava.services.NotificationService;
 import cowinjava.services.PincodeUpdateService;
 import javafx.collections.FXCollections;
+import javafx.concurrent.ScheduledService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -429,17 +431,10 @@ public class CowinGUIController implements Initializable {
      */
     private void scanByDistrict(final long dist_id, final int duration, final int age, final String vaccinename,
             final int dosenumber, final String feetype) {
-        dist_service.setDist_id(dist_id);
+        dist_service.setValues(dist_id, age, vaccinename, dosenumber, feetype);
         dist_service.setPeriod(Duration.seconds(duration));
-        dist_service.setAge(age);
-        dist_service.setVaccinename(vaccinename);
-        dist_service.setDosenumber(dosenumber);
-        dist_service.setFeetype(feetype);
         dist_service.setOnSucceeded(e -> {
-            final ArrayList<Center> availablecenters = dist_service.getValue();
-            resultTable.getItems().clear();
-            resultTable.getItems().addAll(availablecenters);
-            statusLabel.setText("Last Updated: " + LocalTime.now());
+            updateResults(dist_service);
         });
         dist_service.start();
     }
@@ -459,18 +454,21 @@ public class CowinGUIController implements Initializable {
      */
     private void scanByPincode(final int pincode, final int duration, final int age, final String vaccinename,
             final int dosenumber, final String feetype) {
-        pin_service.setPin_code(pincode);
+        pin_service.setValues(pincode, age, vaccinename, dosenumber, feetype);
         pin_service.setPeriod(Duration.seconds(duration));
-        pin_service.setAge(age);
-        pin_service.setVaccinename(vaccinename);
-        pin_service.setDosenumber(dosenumber);
-        pin_service.setFeetype(feetype);
         pin_service.setOnSucceeded(e -> {
-            final ArrayList<Center> availablecenters = pin_service.getValue();
-            resultTable.getItems().clear();
-            resultTable.getItems().addAll(availablecenters);
-            statusLabel.setText("Last Updated: " + LocalTime.now());
+            updateResults(pin_service);
         });
         pin_service.start();
+    }
+
+    private void updateResults(ScheduledService<ArrayList<Center>> s) {
+        final ArrayList<Center> availablecenters = s.getValue();
+        resultTable.getItems().clear();
+        resultTable.getItems().addAll(availablecenters);
+        statusLabel.setText("Last Updated: " + LocalTime.now());
+        if (availablecenters.size() > 0) {
+            NotificationService.showInfoNotification("Some vaccination slots found!", "Cowin Status Tracker");
+        }
     }
 }

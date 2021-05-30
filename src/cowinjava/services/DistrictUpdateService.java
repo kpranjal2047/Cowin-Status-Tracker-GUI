@@ -54,43 +54,12 @@ public class DistrictUpdateService extends ScheduledService<ArrayList<Center>> {
         return service;
     }
 
-    public long getDist_id() {
-        return dist_id;
-    }
-
-    public void setDist_id(final long dist_id) {
+    public void setValues(final long dist_id, final int age, final String vaccinename, final int dosenumber,
+            final String feetype) {
         this.dist_id = dist_id;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(final int age) {
         this.age = age;
-    }
-
-    public String getVaccinename() {
-        return vaccinename;
-    }
-
-    public void setVaccinename(final String vaccinename) {
         this.vaccinename = vaccinename;
-    }
-
-    public int getDosenumber() {
-        return dosenumber;
-    }
-
-    public void setDosenumber(final int dosenumber) {
         this.dosenumber = dosenumber;
-    }
-
-    public String getFeetype() {
-        return feetype;
-    }
-
-    public void setFeetype(final String feetype) {
         this.feetype = feetype;
     }
 

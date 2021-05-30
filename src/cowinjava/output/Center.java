@@ -71,5 +71,4 @@ public class Center {
     public long getPincode() {
         return pincode;
     }
-
 }
