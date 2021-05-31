@@ -28,4 +28,10 @@ public abstract class NotificationService {
             trayIcon.displayMessage(header, content, MessageType.INFO);
         }
     }
+
+    public static void showErrorNotification(String content, String header) {
+        if (SystemTray.isSupported()) {
+            trayIcon.displayMessage(header, content, MessageType.ERROR);
+        }
+    }
 }

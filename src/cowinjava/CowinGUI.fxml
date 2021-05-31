@@ -13,103 +13,108 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="671.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cowinjava.CowinGUIController">
+<AnchorPane prefHeight="671.0" prefWidth="1050.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cowinjava.CowinGUIController">
    <children>
-      <Label layoutX="323.0" layoutY="14.0" text="Cowin Status Tracker" underline="true">
+      <Label layoutX="402.0" layoutY="14.0" text="Cowin Status Tracker" underline="true">
          <font>
             <Font name="Calibri Italic" size="30.0" />
          </font>
       </Label>
-      <Label fx:id="pincodeLabel" layoutX="64.0" layoutY="84.0" text="Search by PIN Code">
+      <Label fx:id="pincodeLabel" layoutX="89.0" layoutY="84.0" text="Search by PIN Code">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Label fx:id="districtLabel" layoutX="314.0" layoutY="84.0" text="Search by district name">
+      <Label fx:id="districtLabel" layoutX="339.0" layoutY="84.0" text="Search by district name">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <JFXToggleButton fx:id="pindistToggle" layoutX="235.0" layoutY="67.0" onAction="#pindistChangeHandler" prefWidth="74.0" text=" " toggleColor="#00bca9" unToggleColor="#ee5c5c" unToggleLineColor="#f5a7a7" />
-      <JFXTextField fx:id="pinInput" alignment="CENTER" focusColor="#ee5c5c" layoutX="214.0" layoutY="130.0" prefWidth="115.0" promptText="PIN Code">
+      <JFXToggleButton fx:id="pindistToggle" contentDisplay="GRAPHIC_ONLY" layoutX="260.0" layoutY="67.0" onAction="#pindistChangeHandler" prefWidth="74.0" text=" " toggleColor="#00bca9" unToggleColor="#ee5c5c" unToggleLineColor="#f5a7a7" />
+      <JFXTextField fx:id="pinInput" alignment="CENTER" focusColor="#ee5c5c" layoutX="239.0" layoutY="130.0" prefWidth="115.0" promptText="PIN Code">
          <font>
             <Font size="14.0" />
          </font>
       </JFXTextField>
-      <JFXComboBox fx:id="stateInput" focusColor="#00bca9" layoutX="105.0" layoutY="135.0" onAction="#stateChangeHandler" prefWidth="170.0" promptText="State Name" visibleRowCount="5" />
-      <JFXComboBox fx:id="districtInput" focusColor="#00bca9" layoutX="296.0" layoutY="135.0" prefWidth="170.0" promptText="District Name" visibleRowCount="5" />
-      <Label layoutX="111.0" layoutY="215.0" text="Refresh Interval (sec):">
+      <JFXComboBox fx:id="stateInput" focusColor="#00bca9" layoutX="130.0" layoutY="135.0" onAction="#stateChangeHandler" prefWidth="170.0" promptText="State Name" visibleRowCount="5" />
+      <JFXComboBox fx:id="districtInput" focusColor="#00bca9" layoutX="321.0" layoutY="135.0" prefWidth="170.0" promptText="District Name" visibleRowCount="5" />
+      <Label layoutX="136.0" layoutY="192.0" text="Refresh Interval (sec):">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Spinner fx:id="refreshInput" editable="true" layoutX="307.0" layoutY="214.0" />
-      <Label layoutX="562.0" layoutY="84.0" text="Apply filters:">
+      <Spinner fx:id="refreshInput" editable="true" layoutX="332.0" layoutY="191.0" />
+      <JFXToggleButton fx:id="notificationToggle" contentDisplay="RIGHT" graphicTextGap="25.0" layoutX="143.0" layoutY="219.0" selected="true" text="Show Notifications" toggleColor="#2222ff" toggleLineColor="#7777ff">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </JFXToggleButton>
+      <Label layoutX="652.0" layoutY="84.0" text="Apply filters:">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <JFXCheckBox fx:id="ageCheckbox" checkedColor="#019401" layoutX="578.0" layoutY="115.0" onAction="#ageCheckBoxHandler" text="Age">
+      <JFXCheckBox fx:id="ageCheckbox" checkedColor="#019401" layoutX="668.0" layoutY="115.0" onAction="#ageCheckBoxHandler" text="Age">
          <font>
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
-      <Spinner fx:id="ageInput" editable="true" layoutX="705.0" layoutY="113.0" prefHeight="25.0" prefWidth="170.0" />
-      <JFXCheckBox fx:id="vaccineCheckbox" checkedColor="#00add0" layoutX="578.0" layoutY="152.0" onAction="#vaccineCheckBoxHandler" text="Vaccine Name">
+      <Spinner fx:id="ageInput" editable="true" layoutX="795.0" layoutY="113.0" prefHeight="25.0" prefWidth="170.0" />
+      <JFXCheckBox fx:id="vaccineCheckbox" checkedColor="#00add0" layoutX="668.0" layoutY="152.0" onAction="#vaccineCheckBoxHandler" text="Vaccine Name">
          <font>
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
-      <JFXComboBox fx:id="vaccineInput" focusColor="#00add0" layoutX="705.0" layoutY="148.0" prefWidth="170.0" visibleRowCount="5" />
-      <JFXCheckBox fx:id="doseCheckbox" checkedColor="#ee8b00" layoutX="578.0" layoutY="192.0" onAction="#doseCheckBoxHandler" text="Dose Number">
+      <JFXComboBox fx:id="vaccineInput" focusColor="#00add0" layoutX="795.0" layoutY="148.0" prefWidth="170.0" visibleRowCount="5" />
+      <JFXCheckBox fx:id="doseCheckbox" checkedColor="#ee8b00" layoutX="668.0" layoutY="192.0" onAction="#doseCheckBoxHandler" text="Dose Number">
          <font>
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
-      <Label layoutX="747.0" layoutY="191.0" text="1">
+      <Label layoutX="837.0" layoutY="191.0" text="1">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Label layoutX="827.0" layoutY="191.0" text="2">
+      <Label layoutX="917.0" layoutY="191.0" text="2">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <JFXToggleButton fx:id="doseInput" layoutX="758.0" layoutY="173.0" prefWidth="74.0" text=" " toggleColor="#ff8800" toggleLineColor="#999999" unToggleColor="#ffbb00" />
-      <JFXCheckBox fx:id="feeCheckbox" checkedColor="#a400eb" layoutX="578.0" layoutY="231.0" onAction="#feeCheckBoxHandler" text="Fee Type">
+      <JFXToggleButton fx:id="doseInput" contentDisplay="GRAPHIC_ONLY" layoutX="848.0" layoutY="173.0" prefWidth="74.0" text=" " toggleColor="#ff8800" toggleLineColor="#999999" unToggleColor="#ffbb00" />
+      <JFXCheckBox fx:id="feeCheckbox" checkedColor="#a400eb" layoutX="668.0" layoutY="231.0" onAction="#feeCheckBoxHandler" text="Fee Type">
          <font>
             <Font size="14.0" />
          </font>
       </JFXCheckBox>
-      <Label layoutX="720.0" layoutY="230.0" text="Free">
+      <Label layoutX="810.0" layoutY="230.0" text="Free">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Label layoutX="827.0" layoutY="230.0" text="Paid">
+      <Label layoutX="917.0" layoutY="230.0" text="Paid">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <JFXToggleButton fx:id="feeInput" layoutX="758.0" layoutY="212.0" prefWidth="74.0" text=" " toggleColor="#b211eb" toggleLineColor="#999999" unToggleColor="#dd11eb" />
-      <Separator layoutX="539.0" layoutY="67.0" orientation="VERTICAL" prefHeight="200.0" />
-      <JFXButton fx:id="startButton" buttonType="RAISED" defaultButton="true" layoutX="357.0" layoutY="288.0" onAction="#startButtonHandler" ripplerFill="#008d00" style="-fx-background-color: #66cc66;" text="Start">
+      <JFXToggleButton fx:id="feeInput" contentDisplay="GRAPHIC_ONLY" layoutX="848.0" layoutY="212.0" prefWidth="74.0" text=" " toggleColor="#b211eb" toggleLineColor="#999999" unToggleColor="#dd11eb" />
+      <Separator layoutX="582.0" layoutY="62.0" orientation="VERTICAL" prefHeight="200.0" />
+      <JFXButton fx:id="startButton" buttonType="RAISED" defaultButton="true" layoutX="436.0" layoutY="292.0" onAction="#startButtonHandler" ripplerFill="#008d00" style="-fx-background-color: #66cc66;" text="Start">
          <font>
             <Font size="15.0" />
          </font>
       </JFXButton>
-      <JFXButton fx:id="stopButton" buttonType="RAISED" cancelButton="true" layoutX="494.0" layoutY="288.0" onAction="#stopButtonHandler" ripplerFill="#8d0000" style="-fx-background-color: #cc6666;" text="Stop">
+      <JFXButton fx:id="stopButton" buttonType="RAISED" cancelButton="true" layoutX="573.0" layoutY="292.0" onAction="#stopButtonHandler" ripplerFill="#8d0000" style="-fx-background-color: #cc6666;" text="Stop">
          <font>
             <Font size="15.0" />
          </font>
       </JFXButton>
-      <Label fx:id="statusLabel" alignment="CENTER" layoutX="347.0" layoutY="336.0" AnchorPane.leftAnchor="347.0" AnchorPane.rightAnchor="347.0">
+      <Label fx:id="statusLabel" alignment="CENTER" layoutX="352.0" layoutY="336.0" AnchorPane.leftAnchor="352.0" AnchorPane.rightAnchor="342.0">
          <font>
             <Font name="Calibri" size="16.0" />
          </font>
       </Label>
-      <TableView fx:id="resultTable" focusTraversable="false" layoutX="10.0" layoutY="366.0" prefHeight="294.0" prefWidth="881.0">
+      <TableView fx:id="resultTable" focusTraversable="false" layoutX="10.0" layoutY="366.0" prefHeight="294.0" prefWidth="1030.0">
          <columns>
             <TableColumn fx:id="ageColumn" editable="false" text="Minimum Age" />
             <TableColumn fx:id="vaccineColumn" editable="false" text="Vaccine Name" />

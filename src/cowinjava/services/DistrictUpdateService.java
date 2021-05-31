@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import cowinjava.exceptions.DataCommunicationException;
+import cowinjava.exceptions.StatusNotOKException;
 import cowinjava.output.Center;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -120,9 +121,14 @@ public class DistrictUpdateService extends ScheduledService<ArrayList<Center>> {
                             }
                         }
                     } else {
-                        throw new DataCommunicationException("Status code is not OK");
+                        throw new StatusNotOKException("Status code is not OK");
                     }
                     con.disconnect();
+                } catch (UnknownHostException e) {
+                    NotificationService.showErrorNotification("Network Error\nPlease check your internet connection",
+                            "Cowin Status Tracker");
+                } catch (StatusNotOKException e) {
+                    NotificationService.showErrorNotification("Error\nServer did not reply", "Cowin Status Tracker");
                 } catch (IOException | ParseException e) {
                 }
                 return out;

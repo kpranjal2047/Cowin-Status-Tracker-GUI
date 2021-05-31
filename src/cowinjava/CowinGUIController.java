@@ -65,6 +65,8 @@ public class CowinGUIController implements Initializable {
     @FXML
     private Spinner<Integer> refreshInput;
     @FXML
+    private JFXToggleButton notificationToggle;
+    @FXML
     private JFXCheckBox ageCheckbox;
     @FXML
     private Spinner<Integer> ageInput;
@@ -467,7 +469,7 @@ public class CowinGUIController implements Initializable {
         resultTable.getItems().clear();
         resultTable.getItems().addAll(availablecenters);
         statusLabel.setText("Last Updated: " + LocalTime.now());
-        if (availablecenters.size() > 0) {
+        if (availablecenters.size() > 0 && notificationToggle.isSelected()) {
             NotificationService.showInfoNotification("Some vaccination slots found!", "Cowin Status Tracker");
         }
     }
