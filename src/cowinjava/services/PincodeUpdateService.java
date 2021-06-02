@@ -37,7 +37,7 @@ public class PincodeUpdateService extends ScheduledService<ArrayList<Center>> {
     private static PincodeUpdateService service = null;
 
     /**
-     * Private constructor to prevent multiple instance creation.
+     * Private constructor to prevent object creation externally.
      */
     private PincodeUpdateService() {
     }
@@ -124,11 +124,11 @@ public class PincodeUpdateService extends ScheduledService<ArrayList<Center>> {
                         throw new StatusNotOKException("Status code is not OK");
                     }
                     con.disconnect();
-                } catch (UnknownHostException e) {
-                    NotificationService.showErrorNotification("Network Error\nPlease check your internet connection",
+                } catch (final UnknownHostException e) {
+                    TrayNotificationService.showErrorNotification("Network Error\nPlease check your internet connection",
                             "Cowin Status Tracker");
-                } catch (StatusNotOKException e) {
-                    NotificationService.showErrorNotification("Error\nServer did not reply", "Cowin Status Tracker");
+                } catch (final StatusNotOKException e) {
+                    TrayNotificationService.showErrorNotification("Error\nServer did not reply", "Cowin Status Tracker");
                 } catch (IOException | ParseException e) {
                 }
                 return out;

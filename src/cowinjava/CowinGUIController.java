@@ -23,10 +23,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import cowinjava.exceptions.InvalidInputException;
+import cowinjava.exceptions.SecretsFileNotFoundException;
 import cowinjava.output.Center;
 import cowinjava.services.DistrictUpdateService;
-import cowinjava.services.NotificationService;
 import cowinjava.services.PincodeUpdateService;
+import cowinjava.services.SmsNotificationService;
+import cowinjava.services.TrayNotificationService;
 import javafx.collections.FXCollections;
 import javafx.concurrent.ScheduledService;
 import javafx.event.ActionEvent;
@@ -66,6 +68,8 @@ public class CowinGUIController implements Initializable {
     private Spinner<Integer> refreshInput;
     @FXML
     private JFXToggleButton notificationToggle;
+    @FXML
+    private JFXToggleButton smsToggle;
     @FXML
     private JFXCheckBox ageCheckbox;
     @FXML
@@ -110,6 +114,7 @@ public class CowinGUIController implements Initializable {
     private JSONObject map;
     private final DistrictUpdateService dist_service;
     private final PincodeUpdateService pin_service;
+    private SmsNotificationService smsservice;
 
     public CowinGUIController() {
         try (InputStream inputStream = getClass().getResourceAsStream("dist_map.json")) {
@@ -175,6 +180,25 @@ public class CowinGUIController implements Initializable {
     private void stateChangeHandler(final ActionEvent event) {
         final String state = stateInput.getValue();
         fillDistricts(state);
+    }
+
+    /**
+     * This method is called 'Receive SMS' toggle is switched.
+     *
+     * @param event ActionEvent object
+     */
+    @FXML
+    private void smsChangeHandler(final ActionEvent event) {
+        if (smsToggle.isSelected()) {
+            try {
+                smsservice = SmsNotificationService.getSmsService();
+            } catch (final SecretsFileNotFoundException e) {
+                smsToggle.setSelected(false);
+                final Alert a = new Alert(AlertType.ERROR, e.getMessage());
+                a.setTitle("Cowin Status Tracker");
+                a.showAndWait();
+            }
+        }
     }
 
     /**
@@ -464,13 +488,18 @@ public class CowinGUIController implements Initializable {
         pin_service.start();
     }
 
-    private void updateResults(ScheduledService<ArrayList<Center>> s) {
+    private void updateResults(final ScheduledService<ArrayList<Center>> s) {
         final ArrayList<Center> availablecenters = s.getValue();
         resultTable.getItems().clear();
         resultTable.getItems().addAll(availablecenters);
         statusLabel.setText("Last Updated: " + LocalTime.now());
-        if (availablecenters.size() > 0 && notificationToggle.isSelected()) {
-            NotificationService.showInfoNotification("Some vaccination slots found!", "Cowin Status Tracker");
+        if (availablecenters.size() > 0) {
+            if (notificationToggle.isSelected()) {
+                TrayNotificationService.showInfoNotification("Some vaccination slots found!", "Cowin Status Tracker");
+            }
+            if (smsToggle.isSelected()) {
+                smsservice.sendSms("Some vaccination slots found! Please check Cowin Status Tracker");
+            }
         }
     }
 }
