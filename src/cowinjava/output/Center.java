@@ -2,50 +2,50 @@ package cowinjava.output;
 
 /**
  * Class to represent vaccination centers.
- * 
+ *
  * @author Kumar Pranjal
  */
 public class Center {
 
-    private final long minage;
-    private final String vaccinename;
+    private final long minAge;
+    private final String vaccineName;
     private final String date;
     private final long dose1count;
     private final long dose2count;
-    private final String feetype;
-    private final String centername;
-    private final long pincode;
+    private final String feeType;
+    private final String centerName;
+    private final long pinCode;
 
     /**
      * Constructor initializing all necessary details.
-     * 
-     * @param minage      Minimum age
-     * @param vaccinename Available vaccine name
+     *
+     * @param minAge      Minimum age
+     * @param vaccineName Available vaccine name
      * @param date        Session date
      * @param dose1count  Dose 1 availability
      * @param dose2count  Dose 2 availability
-     * @param feetype     Fee type (Free / Paid)
-     * @param centername  Center name
-     * @param pincode     Center pin code
+     * @param feeType     Fee type (Free / Paid)
+     * @param centerName  Center name
+     * @param pinCode     Center pin code
      */
-    public Center(final long minage, final String vaccinename, final String date, final long dose1count,
-            final long dose2count, final String feetype, final String centername, final long pincode) {
-        this.minage = minage;
-        this.vaccinename = vaccinename;
+    public Center(final long minAge, final String vaccineName, final String date, final long dose1count,
+            final long dose2count, final String feeType, final String centerName, final long pinCode) {
+        this.minAge = minAge;
+        this.vaccineName = vaccineName;
         this.date = date;
         this.dose1count = dose1count;
         this.dose2count = dose2count;
-        this.feetype = feetype;
-        this.centername = centername;
-        this.pincode = pincode;
+        this.feeType = feeType;
+        this.centerName = centerName;
+        this.pinCode = pinCode;
     }
 
-    public long getMinage() {
-        return minage;
+    public long getMinAge() {
+        return minAge;
     }
 
-    public String getVaccinename() {
-        return vaccinename;
+    public String getVaccineName() {
+        return vaccineName;
     }
 
     public String getDate() {
@@ -60,15 +60,15 @@ public class Center {
         return dose2count;
     }
 
-    public String getFeetype() {
-        return feetype;
+    public String getFeeType() {
+        return feeType;
     }
 
-    public String getCentername() {
-        return centername;
+    public String getCenterName() {
+        return centerName;
     }
 
-    public long getPincode() {
-        return pincode;
+    public long getPinCode() {
+        return pinCode;
     }
 }

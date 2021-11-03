@@ -1,49 +1,33 @@
 package cowinjava;
 
+import com.jfoenix.controls.*;
+import cowinjava.exceptions.InvalidInputException;
+import cowinjava.exceptions.SecretsFileNotFoundException;
+import cowinjava.output.Center;
+import cowinjava.services.ScanService;
+import cowinjava.services.ScanType;
+import cowinjava.services.SmsNotificationService;
+import cowinjava.services.TrayNotificationService;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Paint;
+import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXToggleButton;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import cowinjava.exceptions.InvalidInputException;
-import cowinjava.exceptions.SecretsFileNotFoundException;
-import cowinjava.output.Center;
-import cowinjava.services.DistrictUpdateService;
-import cowinjava.services.PincodeUpdateService;
-import cowinjava.services.SmsNotificationService;
-import cowinjava.services.TrayNotificationService;
-import javafx.collections.FXCollections;
-import javafx.concurrent.ScheduledService;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.paint.Paint;
-import javafx.util.Duration;
+import java.util.*;
 
 /**
  * GUI FXML Controller class
@@ -53,11 +37,11 @@ import javafx.util.Duration;
 public class CowinGUIController implements Initializable {
 
     @FXML
-    private Label pincodeLabel;
+    private Label pinCodeLabel;
     @FXML
     private Label districtLabel;
     @FXML
-    private JFXToggleButton pindistToggle;
+    private JFXToggleButton pinDistToggle;
     @FXML
     private JFXTextField pinInput;
     @FXML
@@ -109,20 +93,23 @@ public class CowinGUIController implements Initializable {
     @FXML
     private TableColumn<Center, String> centerNameColumn;
     @FXML
-    private TableColumn<Center, Long> pincodeColumn;
+    private TableColumn<Center, Long> pinCodeColumn;
 
-    private JSONObject map;
-    private final DistrictUpdateService dist_service;
-    private final PincodeUpdateService pin_service;
-    private SmsNotificationService smsservice;
+    private Map<String, Map<String, String>> map;
+    private ScanService scanService;
+    private SmsNotificationService smsService;
 
+    /**
+     * Constructor
+     */
     public CowinGUIController() {
         try (InputStream inputStream = getClass().getResourceAsStream("dist_map.json")) {
-            map = (JSONObject) new JSONParser().parse(new BufferedReader(new InputStreamReader(inputStream)));
-        } catch (IOException | ParseException e) {
+            final BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+            @SuppressWarnings("unchecked")
+            final Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) new JSONParser().parse(br);
+            this.map = map;
+        } catch (IOException | ParseException ignored) {
         }
-        dist_service = DistrictUpdateService.getDistrictUpdateService();
-        pin_service = PincodeUpdateService.getPincodeUpdateService();
     }
 
     /**
@@ -135,7 +122,7 @@ public class CowinGUIController implements Initializable {
         initializeTable();
         refreshInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(3, 300, 60, 1));
         ageInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 18, 1));
-        pincodeLabel.setTextFill(Paint.valueOf("#ee5c5c"));
+        pinCodeLabel.setTextFill(Paint.valueOf("#ee5c5c"));
         stateInput.setVisible(false);
         districtInput.setVisible(false);
         stopButton.setDisable(true);
@@ -147,21 +134,17 @@ public class CowinGUIController implements Initializable {
 
     /**
      * This method modifies GUI when "search by pin/district" toggle is switched.
-     *
-     * @param event ActionEvent object
-     * @see #prepareSearchByPin()
-     * @see #prepareSearchByDistrict()
      */
     @FXML
-    private void pindistChangeHandler(final ActionEvent event) {
-        if (pindistToggle.isSelected()) {
-            pincodeLabel.setTextFill(Paint.valueOf("black"));
+    private void pinDistChangeHandler() {
+        if (pinDistToggle.isSelected()) {
+            pinCodeLabel.setTextFill(Paint.valueOf("black"));
             districtLabel.setTextFill(Paint.valueOf("#00bca9"));
             pinInput.setVisible(false);
             stateInput.setVisible(true);
             districtInput.setVisible(true);
         } else {
-            pincodeLabel.setTextFill(Paint.valueOf("#ee5c5c"));
+            pinCodeLabel.setTextFill(Paint.valueOf("#ee5c5c"));
             districtLabel.setTextFill(Paint.valueOf("black"));
             pinInput.setVisible(true);
             stateInput.setVisible(false);
@@ -173,25 +156,22 @@ public class CowinGUIController implements Initializable {
      * This method is called when new state is selected. The method fills district
      * names in district select combo box.
      *
-     * @param event ActionEvent object
      * @see #fillDistricts(String)
      */
     @FXML
-    private void stateChangeHandler(final ActionEvent event) {
+    private void stateChangeHandler() {
         final String state = stateInput.getValue();
         fillDistricts(state);
     }
 
     /**
-     * This method is called 'Receive SMS' toggle is switched.
-     *
-     * @param event ActionEvent object
+     * This method is called when 'Receive SMS' toggle is switched.
      */
     @FXML
-    private void smsChangeHandler(final ActionEvent event) {
+    private void smsChangeHandler() {
         if (smsToggle.isSelected()) {
             try {
-                smsservice = SmsNotificationService.getSmsService();
+                smsService = SmsNotificationService.getSmsService();
             } catch (final SecretsFileNotFoundException e) {
                 smsToggle.setSelected(false);
                 final Alert a = new Alert(AlertType.ERROR, e.getMessage());
@@ -204,54 +184,44 @@ public class CowinGUIController implements Initializable {
     /**
      * This method enables/disables age input when age checkbox is
      * selected/deselected.
-     *
-     * @param event ActionEvent object
      */
     @FXML
-    private void ageCheckBoxHandler(final ActionEvent event) {
+    private void ageCheckBoxHandler() {
         ageInput.setDisable(!ageCheckbox.isSelected());
     }
 
     /**
      * This method enables/disables vaccine combo box when vaccine checkbox is
      * selected/deselected.
-     *
-     * @param event ActionEvent object
      */
     @FXML
-    private void vaccineCheckBoxHandler(final ActionEvent event) {
+    private void vaccineCheckBoxHandler() {
         vaccineInput.setDisable(!vaccineCheckbox.isSelected());
     }
 
     /**
      * This method enables/disables dose number toggle when dose checkbox is
      * selected/deselected.
-     *
-     * @param event ActionEvent object
      */
     @FXML
-    private void doseCheckBoxHandler(final ActionEvent event) {
+    private void doseCheckBoxHandler() {
         doseInput.setDisable(!doseCheckbox.isSelected());
     }
 
     /**
      * This method enables/disables fee type toggle when fee checkbox is
      * selected/deselected.
-     *
-     * @param event ActionEvent object
      */
     @FXML
-    private void feeCheckBoxHandler(final ActionEvent event) {
+    private void feeCheckBoxHandler() {
         feeInput.setDisable(!feeCheckbox.isSelected());
     }
 
     /**
      * This method is called when Start button is clicked.
-     *
-     * @param event ActionEvent object
      */
     @FXML
-    private void startButtonHandler(final ActionEvent event) {
+    private void startButtonHandler() {
         int age;
         if (ageCheckbox.isSelected()) {
             try {
@@ -270,25 +240,25 @@ public class CowinGUIController implements Initializable {
             age = 100;
         }
 
-        String vaccinename;
+        String vaccineName;
         if (vaccineCheckbox.isSelected()) {
-            vaccinename = vaccineInput.getValue();
+            vaccineName = vaccineInput.getValue();
         } else {
-            vaccinename = null;
+            vaccineName = null;
         }
 
-        int dosenumber;
+        int doseNumber;
         if (doseCheckbox.isSelected()) {
-            dosenumber = doseInput.isSelected() ? 2 : 1;
+            doseNumber = doseInput.isSelected() ? 2 : 1;
         } else {
-            dosenumber = 0;
+            doseNumber = 0;
         }
 
-        String feetype;
+        String feeType;
         if (feeCheckbox.isSelected()) {
-            feetype = feeInput.isSelected() ? "Paid" : "Free";
+            feeType = feeInput.isSelected() ? "Paid" : "Free";
         } else {
-            feetype = null;
+            feeType = null;
         }
 
         int duration;
@@ -301,24 +271,23 @@ public class CowinGUIController implements Initializable {
             final Alert a = new Alert(AlertType.ERROR, "Invalid refresh duration value - " + e.getMessage());
             a.setTitle("Cowin Status Tracker");
             a.showAndWait();
-            ageInput.getValueFactory().setValue(60);
+            refreshInput.getValueFactory().setValue(60);
             return;
         }
 
-        long id = 0L;
-        int pincode = 0;
-        if (pindistToggle.isSelected()) {
+        int pin_id;
+        if (pinDistToggle.isSelected()) {
             final String state = stateInput.getValue();
             final String district = districtInput.getValue();
-            id = (long) ((JSONObject) map.get(state)).get(district);
+            pin_id = (int) (long) ((JSONObject) map.get(state)).get(district);
         } else {
             try {
-                pincode = Integer.parseInt(pinInput.getText());
-                if (pincode < 100000 || pincode > 999999) {
-                    throw new InvalidInputException("Entered pincode is not 6-digit");
+                pin_id = Integer.parseInt(pinInput.getText());
+                if (pin_id < 100000 || pin_id > 999999) {
+                    throw new InvalidInputException("Entered pin code is not 6-digit");
                 }
             } catch (NumberFormatException | InvalidInputException e) {
-                final Alert a = new Alert(AlertType.ERROR, "Invalid Pincode - " + e.getMessage());
+                final Alert a = new Alert(AlertType.ERROR, "Invalid pin code - " + e.getMessage());
                 a.setTitle("Cowin Status Tracker");
                 a.showAndWait();
                 return;
@@ -328,7 +297,7 @@ public class CowinGUIController implements Initializable {
         startButton.setText("Running...");
         startButton.setDisable(true);
         stopButton.setDisable(false);
-        pindistToggle.setDisable(true);
+        pinDistToggle.setDisable(true);
         stateInput.setDisable(true);
         districtInput.setDisable(true);
         pinInput.setDisable(true);
@@ -342,32 +311,27 @@ public class CowinGUIController implements Initializable {
         feeCheckbox.setDisable(true);
         feeInput.setDisable(true);
 
-        if (pindistToggle.isSelected()) {
-            scanByDistrict(id, duration, age, vaccinename, dosenumber, feetype);
+        if (pinDistToggle.isSelected()) {
+            scanService = new ScanService(ScanType.DISTRICT_SCAN, pin_id, age, vaccineName, doseNumber, feeType);
         } else {
-            scanByPincode(pincode, duration, age, vaccinename, dosenumber, feetype);
+            scanService = new ScanService(ScanType.PIN_CODE_SCAN, pin_id, age, vaccineName, doseNumber, feeType);
         }
+        scanService.setPeriod(Duration.seconds(duration));
+        scanService.setOnSucceeded(e -> updateResults(scanService));
+        scanService.start();
     }
 
     /**
      * This method is called when Stop button is clicked.
-     *
-     * @param event ActionEvent object
      */
     @FXML
-    private void stopButtonHandler(final ActionEvent event) {
-        if (pindistToggle.isSelected()) {
-            dist_service.cancel();
-            dist_service.reset();
-        } else {
-            pin_service.cancel();
-            pin_service.reset();
-        }
-
+    private void stopButtonHandler() {
+        scanService.cancel();
+        scanService.reset();
         startButton.setText("Start");
         startButton.setDisable(false);
         stopButton.setDisable(true);
-        pindistToggle.setDisable(false);
+        pinDistToggle.setDisable(false);
         stateInput.setDisable(false);
         districtInput.setDisable(false);
         pinInput.setDisable(false);
@@ -384,19 +348,28 @@ public class CowinGUIController implements Initializable {
 
     /**
      * Method for filling state names during initialization.
-     * 
+     *
      * @see #fillDistricts(String)
      */
     private void fillStates() {
-        final ArrayList<String> list = new ArrayList<>();
-        for (final Object s : map.keySet()) {
-            final String state = (String) s;
-            list.add(state);
-        }
+        final List<String> list = new ArrayList<>(map.keySet());
         Collections.sort(list);
         stateInput.setItems(FXCollections.observableList(list));
         stateInput.setValue(list.get(0));
         fillDistricts(list.get(0));
+    }
+
+    /**
+     * Method for updating district names when a state is selected.
+     *
+     * @param state State name
+     * @see #stateChangeHandler()
+     */
+    private void fillDistricts(final String state) {
+        final List<String> list = new ArrayList<>(map.get(state).keySet());
+        Collections.sort(list);
+        districtInput.setItems(FXCollections.observableList(list));
+        districtInput.setValue(list.get(0));
     }
 
     /**
@@ -410,95 +383,37 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * Method for updating district names when new state is selected.
-     *
-     * @param state New state name
-     * @see #stateChangeHandler(ActionEvent)
-     */
-    private void fillDistricts(final String state) {
-        final ArrayList<String> list = new ArrayList<>();
-        final JSONObject district_id = (JSONObject) map.get(state);
-        for (final Object s : district_id.keySet()) {
-            final String district = (String) s;
-            list.add(district);
-        }
-        Collections.sort(list);
-        districtInput.setItems(FXCollections.observableList(list));
-        districtInput.setValue(list.get(0));
-    }
-
-    /**
      * Method to initialize results table during initialization.
      */
     private void initializeTable() {
         resultTable.setPlaceholder(new Label("No vaccination centers found!"));
-        ageColumn.setCellValueFactory(new PropertyValueFactory<>("minage"));
-        vaccineColumn.setCellValueFactory(new PropertyValueFactory<>("vaccinename"));
+        ageColumn.setCellValueFactory(new PropertyValueFactory<>("minAge"));
+        vaccineColumn.setCellValueFactory(new PropertyValueFactory<>("vaccineName"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         dose1Column.setCellValueFactory(new PropertyValueFactory<>("dose1count"));
         dose2Column.setCellValueFactory(new PropertyValueFactory<>("dose2count"));
-        feeTypeColumn.setCellValueFactory(new PropertyValueFactory<>("feetype"));
-        centerNameColumn.setCellValueFactory(new PropertyValueFactory<>("centername"));
-        pincodeColumn.setCellValueFactory(new PropertyValueFactory<>("pincode"));
+        feeTypeColumn.setCellValueFactory(new PropertyValueFactory<>("feeType"));
+        centerNameColumn.setCellValueFactory(new PropertyValueFactory<>("centerName"));
+        pinCodeColumn.setCellValueFactory(new PropertyValueFactory<>("pinCode"));
     }
 
     /**
-     * Method for getting the results using district id. The methods starts a
-     * background service for update checking and displays the result whenever a
-     * vaccination slot is found. The background service runs indefinitely until
-     * stopped by 'Stop' button.
-     * 
-     * @param dist_id     District ID
-     * @param duration    Refresh interval duration
-     * @param age         Age of the person
-     * @param vaccinename Preferred vaccine name
-     * @param dosenumber  Dose number
-     * @param feetype     Fee type (Free / Paid)
+     * Method to print scan results in result table and notify user by sending
+     * notification and SMS.
+     *
+     * @param service {@code ScanService} to get results from.
      */
-    private void scanByDistrict(final long dist_id, final int duration, final int age, final String vaccinename,
-            final int dosenumber, final String feetype) {
-        dist_service.setValues(dist_id, age, vaccinename, dosenumber, feetype);
-        dist_service.setPeriod(Duration.seconds(duration));
-        dist_service.setOnSucceeded(e -> {
-            updateResults(dist_service);
-        });
-        dist_service.start();
-    }
-
-    /**
-     * Method for getting the results using pin code. The methods starts a
-     * background service for update checking and displays the result whenever a
-     * vaccination slot is found. The background service runs indefinitely until
-     * stopped by 'Stop' button.
-     * 
-     * @param pincode     Pin Code
-     * @param duration    Refresh interval duration
-     * @param age         Age of the person
-     * @param vaccinename Preferred vaccine name
-     * @param dosenumber  Dose number
-     * @param feetype     Fee type (Free / Paid)
-     */
-    private void scanByPincode(final int pincode, final int duration, final int age, final String vaccinename,
-            final int dosenumber, final String feetype) {
-        pin_service.setValues(pincode, age, vaccinename, dosenumber, feetype);
-        pin_service.setPeriod(Duration.seconds(duration));
-        pin_service.setOnSucceeded(e -> {
-            updateResults(pin_service);
-        });
-        pin_service.start();
-    }
-
-    private void updateResults(final ScheduledService<ArrayList<Center>> s) {
-        final ArrayList<Center> availablecenters = s.getValue();
+    private void updateResults(final @NotNull ScanService service) {
+        final List<Center> availableCenters = service.getValue();
         resultTable.getItems().clear();
-        resultTable.getItems().addAll(availablecenters);
+        resultTable.getItems().addAll(availableCenters);
         statusLabel.setText("Last Updated: " + LocalTime.now());
-        if (availablecenters.size() > 0) {
+        if (availableCenters.size() > 0) {
             if (notificationToggle.isSelected()) {
                 TrayNotificationService.showInfoNotification("Some vaccination slots found!", "Cowin Status Tracker");
             }
             if (smsToggle.isSelected()) {
-                smsservice.sendSms("Some vaccination slots found! Please check Cowin Status Tracker");
+                smsService.sendSms("Some vaccination slots found! Please check Cowin Status Tracker.");
             }
         }
     }

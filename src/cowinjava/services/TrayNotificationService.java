@@ -1,21 +1,18 @@
 package cowinjava.services;
 
-import java.awt.AWTException;
-import java.awt.Image;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
+import java.awt.*;
 import java.awt.TrayIcon.MessageType;
 
 /**
- * Abstract class representing System tray notification service. Static methods
- * are provided for displaying notifications.
- * 
+ * Class representing System tray notification service. Static methods are
+ * provided for displaying notifications.
+ *
  * @author Kumar Pranjal
  */
-public abstract class TrayNotificationService {
+public class TrayNotificationService {
 
     private static TrayIcon trayIcon;
+
     static {
         if (SystemTray.isSupported()) {
             final SystemTray tray = SystemTray.getSystemTray();
@@ -24,14 +21,20 @@ public abstract class TrayNotificationService {
             trayIcon.setImageAutoSize(true);
             try {
                 tray.add(trayIcon);
-            } catch (final AWTException e) {
+            } catch (final AWTException ignored) {
             }
         }
     }
 
     /**
+     * Private constructor to prevent object creation externally.
+     */
+    private TrayNotificationService() {
+    }
+
+    /**
      * Static method for displaying info notifications.
-     * 
+     *
      * @param content Notification body
      * @param header  Notification title
      */
@@ -43,7 +46,7 @@ public abstract class TrayNotificationService {
 
     /**
      * Static method for displaying error notifications.
-     * 
+     *
      * @param content Notification body
      * @param header  Notification title
      */

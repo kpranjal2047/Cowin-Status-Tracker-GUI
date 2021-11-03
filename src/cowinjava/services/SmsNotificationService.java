@@ -3,46 +3,43 @@ package cowinjava.services;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
-
 import cowinjava.exceptions.SecretsFileNotFoundException;
 import io.github.cdimascio.dotenv.Dotenv;
 
 /**
  * Class representing SMS notification service.
- * 
+ *
  * @author Kumar Pranjal
  */
 public class SmsNotificationService {
 
-    private final String accountSID;
-    private final String authToken;
+    private static SmsNotificationService service = null;
     private final PhoneNumber myTwilioNumber;
     private final PhoneNumber destNumber;
-    private static SmsNotificationService service = null;
 
     /**
      * Private constructor to prevent object creation externally.
-     * 
-     * @throws SecretsFileNotFoundException
+     *
+     * @throws SecretsFileNotFoundException If secrets.env file is missing
      */
     private SmsNotificationService() throws SecretsFileNotFoundException {
         Dotenv dotenv;
         try {
-            dotenv = Dotenv.load();
+            dotenv = Dotenv.configure().filename("secrets.env").load();
         } catch (final Exception e) {
-            throw new SecretsFileNotFoundException("Secrets file (.env) not found!");
+            throw new SecretsFileNotFoundException("Secrets file (secrets.env) not found!");
         }
-        accountSID = dotenv.get("accountSID");
-        authToken = dotenv.get("authToken");
+        final String accountSID = dotenv.get("accountSID");
+        final String authToken = dotenv.get("authToken");
         myTwilioNumber = new PhoneNumber(dotenv.get("myTwilioNumber"));
         destNumber = new PhoneNumber(dotenv.get("destNumber"));
         Twilio.init(accountSID, authToken);
     }
 
     /**
-     * This methods returns any existing sms service or else creates and returns a
+     * This method returns any existing sms service or else creates and returns a
      * new one.
-     * 
+     *
      * @return {@code SmsNotificationService} object
      * @throws SecretsFileNotFoundException When secrets file cannot be read
      */
@@ -55,7 +52,7 @@ public class SmsNotificationService {
 
     /**
      * Method to send SMS to Twilio registered number
-     * 
+     *
      * @param msg Message body
      */
     public void sendSms(final String msg) {
