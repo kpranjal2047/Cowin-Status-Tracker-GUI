@@ -1,14 +1,16 @@
-package cowinjava;
+package cowin;
 
 import com.jfoenix.controls.*;
-import cowinjava.exceptions.InvalidInputException;
-import cowinjava.exceptions.SecretsFileNotFoundException;
-import cowinjava.output.Center;
-import cowinjava.services.ScanService;
-import cowinjava.services.ScanType;
-import cowinjava.services.SmsNotificationService;
-import cowinjava.services.TrayNotificationService;
+import cowin.exceptions.InvalidInputException;
+import cowin.exceptions.SecretsFileNotFoundException;
+import cowin.output.Center;
+import cowin.services.ScanService;
+import cowin.services.ScanType;
+import cowin.services.SmsNotificationService;
+import cowin.services.TrayNotificationService;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Worker;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -79,21 +81,21 @@ public class CowinGUIController implements Initializable {
     @FXML
     private TableView<Center> resultTable;
     @FXML
-    private TableColumn<Center, Long> ageColumn;
+    private TableColumn<Center, Integer> ageColumn;
     @FXML
     private TableColumn<Center, String> vaccineColumn;
     @FXML
     private TableColumn<Center, String> dateColumn;
     @FXML
-    private TableColumn<Center, Long> dose1Column;
+    private TableColumn<Center, Integer> dose1Column;
     @FXML
-    private TableColumn<Center, Long> dose2Column;
+    private TableColumn<Center, Integer> dose2Column;
     @FXML
     private TableColumn<Center, String> feeTypeColumn;
     @FXML
     private TableColumn<Center, String> centerNameColumn;
     @FXML
-    private TableColumn<Center, Long> pinCodeColumn;
+    private TableColumn<Center, Integer> pinCodeColumn;
 
     private Map<String, Map<String, String>> map;
     private ScanService scanService;
@@ -103,10 +105,10 @@ public class CowinGUIController implements Initializable {
      * Constructor
      */
     public CowinGUIController() {
-        try (InputStream inputStream = getClass().getResourceAsStream("dist_map.json")) {
+        try (InputStream inputStream = getClass().getResourceAsStream("District_ID.json")) {
             final BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
             @SuppressWarnings("unchecked")
-            final Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) new JSONParser().parse(br);
+            Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) new JSONParser().parse(br);
             this.map = map;
         } catch (IOException | ParseException ignored) {
         }
@@ -282,12 +284,17 @@ public class CowinGUIController implements Initializable {
             pin_id = (int) (long) ((JSONObject) map.get(state)).get(district);
         } else {
             try {
-                pin_id = Integer.parseInt(pinInput.getText());
+                try {
+                    pin_id = Integer.parseInt(pinInput.getText());
+                } catch (NumberFormatException e) {
+                    final String[] errWords = e.getMessage().split(" ");
+                    throw new InvalidInputException("Invalid pin code - " + errWords[errWords.length - 1]);
+                }
                 if (pin_id < 100000 || pin_id > 999999) {
                     throw new InvalidInputException("Entered pin code is not 6-digit");
                 }
-            } catch (NumberFormatException | InvalidInputException e) {
-                final Alert a = new Alert(AlertType.ERROR, "Invalid pin code - " + e.getMessage());
+            } catch (InvalidInputException e) {
+                final Alert a = new Alert(AlertType.ERROR, e.getMessage());
                 a.setTitle("Cowin Status Tracker");
                 a.showAndWait();
                 return;
@@ -317,7 +324,7 @@ public class CowinGUIController implements Initializable {
             scanService = new ScanService(ScanType.PIN_CODE_SCAN, pin_id, age, vaccineName, doseNumber, feeType);
         }
         scanService.setPeriod(Duration.seconds(duration));
-        scanService.setOnSucceeded(e -> updateResults(scanService));
+        scanService.setOnSucceeded(this::updateResults);
         scanService.start();
     }
 
@@ -376,8 +383,7 @@ public class CowinGUIController implements Initializable {
      * Method for filling vaccine names during initialization.
      */
     private void fillVaccineNames() {
-        final List<String> list = Arrays.asList("Covishield", "Covaxin", "Sputnik V");
-        Collections.sort(list);
+        final List<String> list = Arrays.asList("Covaxin", "Covishield", "Sputnik V");
         vaccineInput.setItems(FXCollections.observableList(list));
         vaccineInput.setValue(list.get(0));
     }
@@ -401,19 +407,22 @@ public class CowinGUIController implements Initializable {
      * Method to print scan results in result table and notify user by sending
      * notification and SMS.
      *
-     * @param service {@code ScanService} to get results from.
+     * @param evt {@code WorkerStateEvent} to get results from.
      */
-    private void updateResults(final @NotNull ScanService service) {
-        final List<Center> availableCenters = service.getValue();
+    private void updateResults(final @NotNull WorkerStateEvent evt) {
+        @SuppressWarnings("unchecked") final Worker<List<Center>> worker = evt.getSource();
+        final List<Center> availableCenters = worker.getValue();
         resultTable.getItems().clear();
         resultTable.getItems().addAll(availableCenters);
         statusLabel.setText("Last Updated: " + LocalTime.now());
-        if (availableCenters.size() > 0) {
+        final int numCenters = availableCenters.size();
+        if (numCenters > 0) {
             if (notificationToggle.isSelected()) {
-                TrayNotificationService.showInfoNotification("Some vaccination slots found!", "Cowin Status Tracker");
+                TrayNotificationService.showInfoNotification(numCenters + " vaccination center(s) found!",
+                        "Cowin Status Tracker");
             }
             if (smsToggle.isSelected()) {
-                smsService.sendSms("Some vaccination slots found! Please check Cowin Status Tracker.");
+                smsService.sendSms(numCenters + " vaccination center(s) found! Please check Cowin Status Tracker.");
             }
         }
     }

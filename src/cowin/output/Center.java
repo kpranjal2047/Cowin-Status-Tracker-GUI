@@ -1,4 +1,4 @@
-package cowinjava.output;
+package cowin.output;
 
 /**
  * Class to represent vaccination centers.
@@ -7,17 +7,18 @@ package cowinjava.output;
  */
 public class Center {
 
-    private final long minAge;
+    private final int minAge;
     private final String vaccineName;
     private final String date;
-    private final long dose1count;
-    private final long dose2count;
+    private final int dose1count;
+    private final int dose2count;
     private final String feeType;
     private final String centerName;
-    private final long pinCode;
+    private final int pinCode;
 
     /**
-     * Constructor initializing all necessary details.
+     * Creates and returns a new {@code Center} with all necessary parameters
+     * initialized.
      *
      * @param minAge      Minimum age
      * @param vaccineName Available vaccine name
@@ -28,8 +29,8 @@ public class Center {
      * @param centerName  Center name
      * @param pinCode     Center pin code
      */
-    public Center(final long minAge, final String vaccineName, final String date, final long dose1count,
-            final long dose2count, final String feeType, final String centerName, final long pinCode) {
+    public Center(final int minAge, final String vaccineName, final String date, final int dose1count,
+                  final int dose2count, final String feeType, final String centerName, final int pinCode) {
         this.minAge = minAge;
         this.vaccineName = vaccineName;
         this.date = date;
@@ -40,35 +41,43 @@ public class Center {
         this.pinCode = pinCode;
     }
 
-    public long getMinAge() {
+    @SuppressWarnings("unused")
+    public int getMinAge() {
         return minAge;
     }
 
+    @SuppressWarnings("unused")
     public String getVaccineName() {
         return vaccineName;
     }
 
+    @SuppressWarnings("unused")
     public String getDate() {
         return date;
     }
 
-    public long getDose1count() {
+    @SuppressWarnings("unused")
+    public int getDose1count() {
         return dose1count;
     }
 
-    public long getDose2count() {
+    @SuppressWarnings("unused")
+    public int getDose2count() {
         return dose2count;
     }
 
+    @SuppressWarnings("unused")
     public String getFeeType() {
         return feeType;
     }
 
+    @SuppressWarnings("unused")
     public String getCenterName() {
         return centerName;
     }
 
-    public long getPinCode() {
+    @SuppressWarnings("unused")
+    public int getPinCode() {
         return pinCode;
     }
 }

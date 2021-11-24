@@ -1,4 +1,4 @@
-package cowinjava.services;
+package cowin.services;
 
 import java.awt.*;
 import java.awt.TrayIcon.MessageType;

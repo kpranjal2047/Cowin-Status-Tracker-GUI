@@ -1,4 +1,4 @@
-package cowinjava.exceptions;
+package cowin.exceptions;
 
 import java.io.IOException;
 

@@ -1,10 +1,11 @@
-package cowinjava;
+package cowin;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -21,14 +22,14 @@ public class CowinMain extends Application {
      * @param args the command line arguments
      */
     public static void main(final String[] args) {
-        Application.launch(args);
+        launch(args);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void start(final Stage stage) throws Exception {
+    public void start(final @NotNull Stage stage) throws Exception {
         final Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("CowinGUI.fxml")));
         stage.setScene(new Scene(root));
         stage.setTitle("Cowin Status Tracker");

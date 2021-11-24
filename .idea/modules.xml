@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Cowin-Status-Tracker-GUI.iml" filepath="$PROJECT_DIR$/Cowin-Status-Tracker-GUI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Cowin Status Tracker.iml" filepath="$PROJECT_DIR$/Cowin Status Tracker.iml" />
     </modules>
   </component>
 </project>
