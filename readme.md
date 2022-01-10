@@ -3,6 +3,8 @@
 This application allows you to view available vaccination slots for a pin code or district. If slots are available it
 can show a toast notification. It can also notify about available slots through SMS (optional).
 
+You can also download vaccination certificate using this application.
+
 ## Usage
 
 This application runs only on Java 8. You can download it
