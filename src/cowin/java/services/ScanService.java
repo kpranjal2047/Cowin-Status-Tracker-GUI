@@ -85,7 +85,8 @@ public class ScanService extends ScheduledService<List<Center>> {
         final LocalDate date = LocalDate.now();
         final String curDate = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         final HttpGet request = new HttpGet(String.format(HOME, pinOrDistId, curDate));
-        request.setHeader("User-Agent", "Mozilla/5.0");
+        request.setHeader("User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
         try (CloseableHttpClient client = HttpClients.createDefault();
                 CloseableHttpResponse response = client.execute(request)) {
             final int status = response.getStatusLine().getStatusCode();

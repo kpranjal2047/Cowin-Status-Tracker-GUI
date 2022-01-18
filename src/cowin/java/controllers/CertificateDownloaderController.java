@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 
 /**
  * CertificateDownloader FXML controller class
- * 
+ *
  * @author Kumar Pranjal
  */
 public class CertificateDownloaderController implements Initializable {
@@ -109,7 +109,8 @@ public class CertificateDownloaderController implements Initializable {
                 json.put("mobile", phoneNo);
                 final HttpPost request = new HttpPost(HOME);
                 request.setEntity(new StringEntity(new Gson().toJson(json)));
-                request.setHeader("User-Agent", "Mozilla/5.0");
+                request.setHeader("User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
                 request.setHeader("Content-type", "application/json");
                 handleRequestAsync(request, this::sendOtpResponseHandler);
             } catch (final UnsupportedEncodingException e) {
@@ -137,7 +138,8 @@ public class CertificateDownloaderController implements Initializable {
                 json.put("txnId", txnId);
                 final HttpPost request = new HttpPost(HOME);
                 request.setEntity(new StringEntity(new Gson().toJson(json)));
-                request.setHeader("User-Agent", "Mozilla/5.0");
+                request.setHeader("User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
                 request.setHeader("Content-type", "application/json");
                 handleRequestAsync(request, this::verifyOtpResponseHandler);
             } catch (final UnsupportedEncodingException e) {
@@ -162,7 +164,8 @@ public class CertificateDownloaderController implements Initializable {
             idMsgLabel.setText("Downloading...");
             idMsgLabel.setTextFill(Color.BLACK);
             final HttpGet request = new HttpGet(String.format(HOME, id));
-            request.setHeader("User-Agent", "Mozilla/5.0");
+            request.setHeader("User-Agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
             request.setHeader("Authorization", "Bearer " + token);
             handleRequestAsync(request, this::downloadResponseHandler);
         } else {
@@ -203,25 +206,25 @@ public class CertificateDownloaderController implements Initializable {
 
     /**
      * Method to send HTTP request and get response asynchronously.
-     * 
+     *
      * @param request  The {@link HttpRequestBase} subclass object with request
      *                 details
      * @param callback Method to execute after successfully obtaining response
      */
     private void handleRequestAsync(final HttpRequestBase request, final EventHandler<WorkerStateEvent> callback) {
-        final Task<CloseableHttpResponse> getResponse = new Task<CloseableHttpResponse>() {
+        final Task<CloseableHttpResponse> getResponseTask = new Task<CloseableHttpResponse>() {
             @Override
             protected CloseableHttpResponse call() throws Exception {
                 return HttpClients.createDefault().execute(request);
             }
         };
-        getResponse.setOnSucceeded(callback);
-        executor.execute(getResponse);
+        getResponseTask.setOnSucceeded(callback);
+        executor.execute(getResponseTask);
     }
 
     /**
      * Callback method when Send OTP request is sent successfully.
-     * 
+     *
      * @param event {@link WorkerStateEvent} object containing response object
      */
     private void sendOtpResponseHandler(@NotNull final WorkerStateEvent event) {
@@ -273,7 +276,7 @@ public class CertificateDownloaderController implements Initializable {
 
     /**
      * Callback method when Verify OTP request is sent successfully.
-     * 
+     *
      * @param event {@link WorkerStateEvent} object containing response object
      */
     private void verifyOtpResponseHandler(@NotNull final WorkerStateEvent event) {
@@ -333,7 +336,7 @@ public class CertificateDownloaderController implements Initializable {
 
     /**
      * Callback method when Download Certificate request is sent successfully.
-     * 
+     *
      * @param event {@link WorkerStateEvent} object containing response object
      */
     private void downloadResponseHandler(@NotNull final WorkerStateEvent event) {
@@ -382,7 +385,7 @@ public class CertificateDownloaderController implements Initializable {
 
     /**
      * Utility method to disable nodes
-     * 
+     *
      * @param nodes Nodes to disable
      */
     private void disableNodes(final Node @NotNull... nodes) {
@@ -398,7 +401,7 @@ public class CertificateDownloaderController implements Initializable {
 
     /**
      * Utility method to enable nodes
-     * 
+     *
      * @param nodes Nodes to enable
      */
     private void enableNodes(final Node @NotNull... nodes) {

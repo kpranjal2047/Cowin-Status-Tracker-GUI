@@ -1,7 +1,7 @@
 {
-    "Andaman And Nicobar Islands": {
+    "Andaman and Nicobar Islands": {
         "Nicobar": 3,
-        "North And Middle Andaman": 1,
+        "North and Middle Andaman": 1,
         "South Andaman": 2
     },
     "Andhra Pradesh": {
@@ -17,7 +17,7 @@
         "Visakhapatnam": 8,
         "Vizianagaram": 15,
         "West Godavari": 16,
-        "Ysr District, Kadapa (Cuddapah)": 6
+        "YSR District, Kadapa (Cuddapah)": 6
     },
     "Arunachal Pradesh": {
         "Anjaw": 22,
@@ -127,7 +127,7 @@
     },
     "Chhattisgarh": {
         "Balod": 110,
-        "Baloda Bazar": 111,
+        "Baloda bazar": 111,
         "Balrampur": 112,
         "Bastar": 113,
         "Bemetara": 114,
@@ -155,10 +155,10 @@
         "Surajpur": 133,
         "Surguja": 134
     },
-    "Dadra And Nagar Haveli": {
-        "Dadra And Nagar Haveli": 137
+    "Dadra and Nagar Haveli": {
+        "Dadra and Nagar Haveli": 137
     },
-    "Daman And Diu": {
+    "Daman and Diu": {
         "Daman": 138,
         "Diu": 139
     },
@@ -247,13 +247,20 @@
         "Yamunanagar": 197
     },
     "Himachal Pradesh": {
-        "Chamba": 791,
-        "Kangra": 795,
-        "Kinnaur": 792,
-        "Mandi": 793,
-        "Shimla": 794
+        "Bilaspur": 219,
+        "Chamba": 214,
+        "Hamirpur": 217,
+        "Kangra": 213,
+        "Kinnaur": 216,
+        "Kullu": 211,
+        "Lahaul Spiti": 210,
+        "Mandi": 215,
+        "Shimla": 208,
+        "Sirmaur": 212,
+        "Solan": 209,
+        "Una": 218
     },
-    "Jammu And Kashmir": {
+    "Jammu and Kashmir": {
         "Anantnag": 224,
         "Bandipore": 223,
         "Baramulla": 225,
@@ -305,7 +312,7 @@
         "Bagalkot": 270,
         "Bangalore Rural": 276,
         "Bangalore Urban": 265,
-        "Bbmp": 294,
+        "BBMP": 294,
         "Belgaum": 264,
         "Bellary": 274,
         "Bidar": 272,
@@ -354,7 +361,7 @@
         "Kargil": 309,
         "Leh": 310
     },
-    "Lakshwadweep Islands": {
+    "Lakshadweep": {
         "Agatti Island": 796,
         "Lakshadweep": 311
     },
@@ -560,8 +567,8 @@
         "Patiala": 494,
         "Rup Nagar": 497,
         "Sangrur": 498,
-        "Sas Nagar": 496,
-        "Sbs Nagar": 500,
+        "SAS Nagar": 496,
+        "SBS Nagar": 500,
         "Sri Muktsar Sahib": 490,
         "Tarn Taran": 495
     },
@@ -582,7 +589,7 @@
         "Dungarpur": 520,
         "Hanumangarh": 517,
         "Jaipur I": 505,
-        "Jaipur Ii": 506,
+        "Jaipur II": 506,
         "Jaisalmer": 527,
         "Jalore": 533,
         "Jhalawar": 515,
@@ -794,14 +801,14 @@
     "West Bengal": {
         "Alipurduar District": 710,
         "Bankura": 711,
-        "Basirhat Hd (North 24 Parganas)": 712,
+        "Basirhat HD (North 24 Parganas)": 712,
         "Birbhum": 713,
-        "Bishnupur Hd (Bankura)": 714,
+        "Bishnupur HD (Bankura)": 714,
         "Cooch Behar": 715,
-        "Coochbehar": 783,
+        "COOCHBEHAR": 783,
         "Dakshin Dinajpur": 716,
         "Darjeeling": 717,
-        "Diamond Harbor Hd (S 24 Parganas)": 718,
+        "Diamond Harbor HD (S 24 Parganas)": 718,
         "East Bardhaman": 719,
         "Hoogly": 720,
         "Howrah": 721,
@@ -812,12 +819,12 @@
         "Malda": 726,
         "Murshidabad": 727,
         "Nadia": 728,
-        "Nandigram Hd (East Medinipore)": 729,
+        "Nandigram HD (East Medinipore)": 729,
         "North 24 Parganas": 730,
         "Paschim Medinipore": 731,
         "Purba Medinipore": 732,
         "Purulia": 733,
-        "Rampurhat Hd (Birbhum)": 734,
+        "Rampurhat HD (Birbhum)": 734,
         "South 24 Parganas": 735,
         "Uttar Dinajpur": 736,
         "West Bardhaman": 737
