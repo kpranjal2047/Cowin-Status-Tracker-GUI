@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
-<AnchorPane prefHeight="294.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cowin.java.controllers.CertificateDownloaderController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="294.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="cowin.controllers.CertificateDownloaderController">
     <Label layoutX="57.0" layoutY="41.0" text="Phone Number:">
         <font>
             <Font name="Calibri" size="20.0" />

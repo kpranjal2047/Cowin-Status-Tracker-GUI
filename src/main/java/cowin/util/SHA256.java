@@ -1,4 +1,4 @@
-package cowin.java.util;
+package cowin.util;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +24,7 @@ public class SHA256 {
 
     /**
      * Static method to encode input string into SHA-256 string
-     * 
+     *
      * @param input String to encode
      * @return SHA-256 encoded string
      */
@@ -38,7 +38,7 @@ public class SHA256 {
 
     /**
      * Internal method to convert byte array to string
-     * 
+     *
      * @param hash Byte array
      * @return The converted string
      */

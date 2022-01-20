@@ -1,4 +1,4 @@
-package cowin.java.util;
+package cowin.util;
 
 /**
  * Class to represent vaccination centers.

@@ -1,9 +1,9 @@
-package cowin.java.services;
+package cowin.services;
 
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
-import cowin.java.exceptions.SecretsFileNotFoundException;
+import cowin.exceptions.SecretsFileNotFoundException;
 import io.github.cdimascio.dotenv.Dotenv;
 
 /**
@@ -13,41 +13,26 @@ import io.github.cdimascio.dotenv.Dotenv;
  */
 public class SmsNotificationService {
 
-    private static SmsNotificationService service = null;
     private final PhoneNumber myTwilioNumber;
     private final PhoneNumber destNumber;
 
     /**
-     * Private constructor to prevent object creation externally.
+     * Creates a new {@code SmsNotificationService} from secrets file (secrets.env)
      *
      * @throws SecretsFileNotFoundException If secrets.env file is missing
      */
-    private SmsNotificationService() throws SecretsFileNotFoundException {
+    public SmsNotificationService() throws SecretsFileNotFoundException {
         Dotenv dotenv;
         try {
             dotenv = Dotenv.configure().filename("secrets.env").load();
         } catch (final Exception e) {
-            throw new SecretsFileNotFoundException("Secrets file (secrets.env) not found!");
+            throw new SecretsFileNotFoundException();
         }
         final String accountSID = dotenv.get("accountSID");
         final String authToken = dotenv.get("authToken");
         myTwilioNumber = new PhoneNumber(dotenv.get("myTwilioNumber"));
         destNumber = new PhoneNumber(dotenv.get("destNumber"));
         Twilio.init(accountSID, authToken);
-    }
-
-    /**
-     * This method returns any existing sms service or else creates and returns a
-     * new one.
-     *
-     * @return {@link SmsNotificationService} object
-     * @throws SecretsFileNotFoundException When secrets file cannot be read
-     */
-    public static SmsNotificationService getSmsService() throws SecretsFileNotFoundException {
-        if (service == null) {
-            service = new SmsNotificationService();
-        }
-        return service;
     }
 
     /**

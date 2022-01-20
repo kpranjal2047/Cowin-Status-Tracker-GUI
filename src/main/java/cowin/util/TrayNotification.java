@@ -1,23 +1,24 @@
-package cowin.java.services;
+package cowin.util;
 
 import java.awt.*;
 import java.awt.TrayIcon.MessageType;
 
 /**
- * Class representing System tray notification service. Static methods are
- * provided for displaying notifications.
+ * This class provides static methods for displaying error and info notification
+ * using Java AWT {@link SystemTray}.
  *
  * @author Kumar Pranjal
  */
-public class TrayNotificationService {
+public class TrayNotification {
 
     private static TrayIcon trayIcon;
 
     static {
         if (SystemTray.isSupported()) {
             final SystemTray tray = SystemTray.getSystemTray();
-            final Image image = Toolkit.getDefaultToolkit().createImage("");
-            trayIcon = new TrayIcon(image, null);
+            final Image image = Toolkit.getDefaultToolkit()
+                    .createImage(TrayNotification.class.getResource("/images/Icon_Logo.png"));
+            trayIcon = new TrayIcon(image, "Cowin Status Tracker");
             trayIcon.setImageAutoSize(true);
             try {
                 tray.add(trayIcon);
@@ -29,7 +30,7 @@ public class TrayNotificationService {
     /**
      * Private constructor to prevent object creation externally.
      */
-    private TrayNotificationService() {
+    private TrayNotification() {
     }
 
     /**

@@ -1,11 +1,12 @@
-package cowin.java.services;
+package cowin.services;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import cowin.java.exceptions.InvalidResponseException;
-import cowin.java.util.Center;
+import cowin.exceptions.InvalidResponseException;
+import cowin.util.Center;
+import cowin.util.TrayNotification;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import org.apache.http.HttpEntity;
@@ -161,13 +162,11 @@ public class ScanService extends ScheduledService<List<Center>> {
                         }
                     }
                 } else {
-                    throw new InvalidResponseException("Empty Response");
+                    throw new InvalidResponseException();
                 }
-            } else {
-                throw new InvalidResponseException("Status code is not OK");
             }
         } catch (final InvalidResponseException e) {
-            TrayNotificationService.showErrorNotification("Error: " + e.getMessage(), "Cowin Status Tracker");
+            TrayNotification.showErrorNotification("Error: Empty Response", "Cowin Status Tracker");
         } catch (final IOException ignored) {
 
         }

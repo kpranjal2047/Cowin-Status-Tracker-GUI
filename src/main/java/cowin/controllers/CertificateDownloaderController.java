@@ -1,13 +1,13 @@
-package cowin.java.controllers;
+package cowin.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
-import cowin.java.exceptions.InvalidResponseException;
-import cowin.java.services.TrayNotificationService;
-import cowin.java.util.SHA256;
+import cowin.exceptions.InvalidResponseException;
+import cowin.util.SHA256;
+import cowin.util.TrayNotification;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.concurrent.WorkerStateEvent;
@@ -243,7 +243,7 @@ public class CertificateDownloaderController implements Initializable {
                     enableNodes(otpInput, verifyOtpButton, otpMsgLabel);
                     disableNodes(idInput, downloadButton, idMsgLabel);
                 } else {
-                    throw new InvalidResponseException("Empty Response");
+                    throw new InvalidResponseException();
                 }
             } else if (status == 400) {
                 if (entity != null && EntityUtils.toString(entity).equals("OTP Already Sent")) {
@@ -258,7 +258,7 @@ public class CertificateDownloaderController implements Initializable {
                 phoneMsgLabel.setTextFill(Color.RED);
                 disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
             } else if (status == 500) {
-                phoneMsgLabel.setText("Internal Server Error!");
+                phoneMsgLabel.setText("Server Error!");
                 phoneMsgLabel.setTextFill(Color.RED);
                 disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
             } else {
@@ -267,7 +267,7 @@ public class CertificateDownloaderController implements Initializable {
                 disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
             }
         } catch (final InvalidResponseException e) {
-            TrayNotificationService.showErrorNotification("Error: " + e.getMessage(), "Cowin Status Tracker");
+            TrayNotification.showErrorNotification("Error: Empty Response", "Cowin Status Tracker");
             disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
         } catch (final IOException ignored) {
 
@@ -296,7 +296,7 @@ public class CertificateDownloaderController implements Initializable {
                     enableNodes(idInput, downloadButton, idMsgLabel);
                     otpInput.setEditable(false);
                 } else {
-                    throw new InvalidResponseException("Empty Response");
+                    throw new InvalidResponseException();
                 }
             } else if (status == 400) {
                 if (entity != null) {
@@ -318,7 +318,7 @@ public class CertificateDownloaderController implements Initializable {
                 otpMsgLabel.setTextFill(Color.RED);
                 disableNodes(idInput, downloadButton, idMsgLabel);
             } else if (status == 500) {
-                otpMsgLabel.setText("Internal Server Error!");
+                otpMsgLabel.setText("Server Error!");
                 otpMsgLabel.setTextFill(Color.RED);
                 disableNodes(idInput, downloadButton, idMsgLabel);
             } else {
@@ -327,7 +327,7 @@ public class CertificateDownloaderController implements Initializable {
                 disableNodes(idInput, downloadButton, idMsgLabel);
             }
         } catch (final InvalidResponseException e) {
-            TrayNotificationService.showErrorNotification("Error: " + e.getMessage(), "Cowin Status Tracker");
+            TrayNotification.showErrorNotification("Error: Empty Response", "Cowin Status Tracker");
             disableNodes(idInput, downloadButton, idMsgLabel);
         } catch (final IOException ignored) {
 
@@ -361,7 +361,7 @@ public class CertificateDownloaderController implements Initializable {
                         idMsgLabel.setTextFill(Color.RED);
                     }
                 } else {
-                    throw new InvalidResponseException("Empty Response");
+                    throw new InvalidResponseException();
                 }
             } else if (status == 400) {
                 idMsgLabel.setText("Bad Request!");
@@ -370,14 +370,14 @@ public class CertificateDownloaderController implements Initializable {
                 idMsgLabel.setText("Unauthorized Access!");
                 idMsgLabel.setTextFill(Color.RED);
             } else if (status == 500) {
-                idMsgLabel.setText("Internal Server Error!");
+                idMsgLabel.setText("Server Error!");
                 idMsgLabel.setTextFill(Color.RED);
             } else {
                 idMsgLabel.setText("Unknown Error!");
                 idMsgLabel.setTextFill(Color.RED);
             }
         } catch (final InvalidResponseException e) {
-            TrayNotificationService.showErrorNotification("Error: " + e.getMessage(), "Cowin Status Tracker");
+            TrayNotification.showErrorNotification("Error: Empty Response", "Cowin Status Tracker");
         } catch (final IOException ignored) {
 
         }
