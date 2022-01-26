@@ -1,0 +1,31 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.jfoenix:jfoenix:9.0.10'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    implementation 'org.jetbrains:annotations:22.0.0'
+    implementation 'io.github.cdimascio:dotenv-java:2.2.3'
+    implementation 'com.twilio.sdk:twilio:8.25.0'
+    implementation 'org.slf4j:slf4j-nop:1.7.33'
+}
+
+javafx {
+    version = "17"
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+run {
+    jvmArgs = [
+            "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+    ]
+}
+
+mainClassName = 'cowin.CowinMain'

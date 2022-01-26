@@ -67,7 +67,7 @@ public class ScanService extends ScheduledService<List<Center>> {
      */
     @Override
     protected Task<List<Center>> createTask() {
-        return new Task<List<Center>>() {
+        return new Task<>() {
             @Override
             protected List<Center> call() {
                 return scan();

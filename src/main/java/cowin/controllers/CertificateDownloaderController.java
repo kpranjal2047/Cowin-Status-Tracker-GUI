@@ -212,7 +212,7 @@ public class CertificateDownloaderController implements Initializable {
      * @param callback Method to execute after successfully obtaining response
      */
     private void handleRequestAsync(final HttpRequestBase request, final EventHandler<WorkerStateEvent> callback) {
-        final Task<CloseableHttpResponse> getResponseTask = new Task<CloseableHttpResponse>() {
+        final Task<CloseableHttpResponse> getResponseTask = new Task<>() {
             @Override
             protected CloseableHttpResponse call() throws Exception {
                 return HttpClients.createDefault().execute(request);
