@@ -8,6 +8,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/remote-targets.xml
 
 # AWS User-specific
 .idea/**/aws.xml
