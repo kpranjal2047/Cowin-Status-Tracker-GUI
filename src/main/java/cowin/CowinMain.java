@@ -1,5 +1,6 @@
 package cowin;
 
+import java.util.Objects;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,8 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 /**
  * Main Class
@@ -31,12 +30,15 @@ public class CowinMain extends Application {
      */
     @Override
     public void start(final @NotNull Stage stage) throws Exception {
-        final Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/fxml/CowinGUI.fxml")));
+        final Parent root = FXMLLoader
+                .load(Objects.requireNonNull(getClass().getResource("/fxml/CowinGUI.fxml")));
         stage.setScene(new Scene(root));
         stage.setTitle("Cowin Status Tracker");
-        stage.getIcons().add(
-                new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/Icon_Logo.png")), 0, 0, true,
-                        true));
+        stage.getIcons()
+                .add(new Image(
+                        Objects.requireNonNull(
+                                getClass().getResourceAsStream("/images/Icon_Logo.png")),
+                        0, 0, true, true));
         stage.setResizable(false);
         stage.setOnCloseRequest(e -> System.exit(0));
         stage.show();

@@ -1,16 +1,18 @@
 package cowin.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility class containing SHA-256 encoder method.
  *
  * @author Kumar Pranjal
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SHA256 {
 
     private static MessageDigest messageDigest;

@@ -2,15 +2,31 @@ package cowin.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.jfoenix.controls.*;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import cowin.exceptions.InvalidInputException;
 import cowin.exceptions.SecretsFileNotFoundException;
 import cowin.services.ScanService;
 import cowin.services.ScanService.ScanType;
 import cowin.services.SmsNotificationService;
+import cowin.services.TrayNotificationService;
 import cowin.util.Center;
 import cowin.util.ErrorAlert;
-import cowin.util.TrayNotification;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Worker;
 import javafx.concurrent.WorkerStateEvent;
@@ -20,7 +36,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
@@ -28,14 +48,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.time.LocalTime;
-import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * GUI FXML controller class
@@ -117,9 +129,8 @@ public class CowinGUIController implements Initializable {
      * Constructor
      */
     public CowinGUIController() {
-        try (final BufferedReader br = new BufferedReader(
-                new InputStreamReader(
-                        Objects.requireNonNull(getClass().getResourceAsStream("/data/District_ID.json"))))) {
+        try (final BufferedReader br = new BufferedReader(new InputStreamReader(Objects
+                .requireNonNull(getClass().getResourceAsStream("/data/District_ID.json"))))) {
             map = new Gson().fromJson(br, JsonObject.class);
         } catch (final IOException ignored) {
         }
@@ -134,7 +145,8 @@ public class CowinGUIController implements Initializable {
         fillVaccineNames();
         fillDoseNumbers();
         initializeTable();
-        refreshInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(3, 300, 60, 1));
+        refreshInput
+                .setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(3, 300, 60, 1));
         ageInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 18, 1));
         pinCodeLabel.setTextFill(Color.valueOf("#ee5c5c"));
         stateInput.setVisible(false);
@@ -163,8 +175,8 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * This method is called when new state is selected. The method fills district
-     * names in district select combo box.
+     * This method is called when new state is selected. The method fills district names in district
+     * select combo box.
      *
      * @see #fillDistricts(String)
      */
@@ -184,15 +196,15 @@ public class CowinGUIController implements Initializable {
                 smsService = new SmsNotificationService();
             } catch (final SecretsFileNotFoundException e) {
                 smsToggle.setSelected(false);
-                final ErrorAlert alert = new ErrorAlert(stackPane, "Secrets file (secrets.env) not found!");
+                final ErrorAlert alert =
+                        new ErrorAlert(stackPane, "Secrets file (secrets.env) not found!");
                 alert.show();
             }
         }
     }
 
     /**
-     * This method enables/disables age input when age checkbox is
-     * selected/deselected.
+     * This method enables/disables age input when age checkbox is selected/deselected.
      */
     @FXML
     private void ageCheckBoxHandler() {
@@ -200,8 +212,7 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * This method enables/disables vaccine combo box when vaccine checkbox is
-     * selected/deselected.
+     * This method enables/disables vaccine combo box when vaccine checkbox is selected/deselected.
      */
     @FXML
     private void vaccineCheckBoxHandler() {
@@ -209,8 +220,7 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * This method enables/disables dose number toggle when dose checkbox is
-     * selected/deselected.
+     * This method enables/disables dose number toggle when dose checkbox is selected/deselected.
      */
     @FXML
     private void doseCheckBoxHandler() {
@@ -218,8 +228,7 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * This method enables/disables fee type toggle when fee checkbox is
-     * selected/deselected.
+     * This method enables/disables fee type toggle when fee checkbox is selected/deselected.
      */
     @FXML
     private void feeCheckBoxHandler() {
@@ -241,7 +250,8 @@ public class CowinGUIController implements Initializable {
             if (Pattern.matches("[1-9][0-9]{5}", pin)) {
                 pinOrDistId = Integer.parseInt(pin);
             } else {
-                final String errMsg = pin.isEmpty() ? "Please enter 6-digit PIN code" : "Invalid PIN Code - " + pin;
+                final String errMsg = pin.isEmpty() ? "Please enter 6-digit PIN code"
+                        : "Invalid PIN Code - " + pin;
                 final ErrorAlert alert = new ErrorAlert(stackPane, errMsg);
                 alert.show();
                 return;
@@ -256,7 +266,8 @@ public class CowinGUIController implements Initializable {
                     throw new InvalidInputException("Age out of range\nExpected range [0 - 100]");
                 }
             } catch (NumberFormatException | InvalidInputException e) {
-                final ErrorAlert alert = new ErrorAlert(stackPane, "Invalid age value - " + e.getMessage());
+                final ErrorAlert alert =
+                        new ErrorAlert(stackPane, "Invalid age value - " + e.getMessage());
                 alert.show();
                 ageInput.getValueFactory().setValue(18);
                 return;
@@ -293,7 +304,8 @@ public class CowinGUIController implements Initializable {
                 throw new InvalidInputException("Duration out of range\nExpected range [3 - 300]");
             }
         } catch (NumberFormatException | InvalidInputException e) {
-            final ErrorAlert alert = new ErrorAlert(stackPane, "Invalid refresh duration value - " + e.getMessage());
+            final ErrorAlert alert =
+                    new ErrorAlert(stackPane, "Invalid refresh duration value - " + e.getMessage());
             alert.show();
             refreshInput.getValueFactory().setValue(60);
             return;
@@ -301,13 +313,16 @@ public class CowinGUIController implements Initializable {
 
         startButton.setText("Running...");
         enableNodes(stopButton);
-        disableNodes(startButton, pinDistToggle, stateInput, districtInput, pinInput, refreshInput, ageCheckbox,
-                ageInput, vaccineCheckbox, vaccineInput, doseCheckbox, doseInput, feeCheckbox, feeInput);
+        disableNodes(startButton, pinDistToggle, stateInput, districtInput, pinInput, refreshInput,
+                ageCheckbox, ageInput, vaccineCheckbox, vaccineInput, doseCheckbox, doseInput,
+                feeCheckbox, feeInput);
 
         if (pinDistToggle.isSelected()) {
-            scanService = new ScanService(ScanType.DISTRICT_SCAN, pinOrDistId, age, vaccineName, doseNumber, feeType);
+            scanService = new ScanService(ScanType.DISTRICT_SCAN, pinOrDistId, age, vaccineName,
+                    doseNumber, feeType);
         } else {
-            scanService = new ScanService(ScanType.PIN_CODE_SCAN, pinOrDistId, age, vaccineName, doseNumber, feeType);
+            scanService = new ScanService(ScanType.PIN_CODE_SCAN, pinOrDistId, age, vaccineName,
+                    doseNumber, feeType);
         }
         scanService.setPeriod(Duration.seconds(duration));
         scanService.setOnSucceeded(this::updateResults);
@@ -322,8 +337,8 @@ public class CowinGUIController implements Initializable {
         scanService.cancel();
         scanService.reset();
         startButton.setText("Start");
-        enableNodes(startButton, pinDistToggle, stateInput, districtInput, pinInput, refreshInput, ageCheckbox,
-                vaccineCheckbox, doseCheckbox, feeCheckbox);
+        enableNodes(startButton, pinDistToggle, stateInput, districtInput, pinInput, refreshInput,
+                ageCheckbox, vaccineCheckbox, doseCheckbox, feeCheckbox);
         disableNodes(stopButton);
         ageInput.setDisable(!ageCheckbox.isSelected());
         vaccineInput.setDisable(!vaccineCheckbox.isSelected());
@@ -345,9 +360,11 @@ public class CowinGUIController implements Initializable {
         final Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.setTitle("Download Certificate");
-        stage.getIcons().add(
-                new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/Icon_Logo.png")), 0, 0, true,
-                        true));
+        stage.getIcons()
+                .add(new Image(
+                        Objects.requireNonNull(
+                                getClass().getResourceAsStream("/images/Icon_Logo.png")),
+                        0, 0, true, true));
         stage.setResizable(false);
         controller.setStage(stage);
         stage.show();
@@ -415,14 +432,13 @@ public class CowinGUIController implements Initializable {
     }
 
     /**
-     * Method to print scan results in result table and notify user by sending
-     * notification and SMS.
+     * Method to print scan results in result table and notify user by sending notification and
+     * SMS.
      *
      * @param evt {@link WorkerStateEvent} to get results from.
      */
     private void updateResults(final @NotNull WorkerStateEvent evt) {
-        @SuppressWarnings("unchecked")
-        final Worker<List<Center>> worker = evt.getSource();
+        @SuppressWarnings("unchecked") final Worker<List<Center>> worker = evt.getSource();
         final List<Center> availableCenters = worker.getValue();
         resultTable.getItems().clear();
         resultTable.getItems().addAll(availableCenters);
@@ -430,11 +446,12 @@ public class CowinGUIController implements Initializable {
         final int numCenters = availableCenters.size();
         if (numCenters > 0) {
             if (notificationToggle.isSelected()) {
-                TrayNotification.showInfoNotification(numCenters + " vaccination center(s) found!",
-                        "Cowin Status Tracker");
+                TrayNotificationService.showInfoNotification(
+                        numCenters + " vaccination center(s) found!", "Cowin Status Tracker");
             }
             if (smsToggle.isSelected()) {
-                smsService.sendSms(numCenters + " vaccination center(s) found! Please check Cowin Status Tracker.");
+                smsService.sendSms(numCenters
+                        + " vaccination center(s) found! Please check Cowin Status Tracker.");
             }
         }
     }
@@ -444,7 +461,7 @@ public class CowinGUIController implements Initializable {
      *
      * @param nodes Nodes to disable
      */
-    private void disableNodes(final Node @NotNull... nodes) {
+    private void disableNodes(final Node @NotNull ... nodes) {
         for (final Node node : nodes) {
             node.setDisable(true);
         }
@@ -455,7 +472,7 @@ public class CowinGUIController implements Initializable {
      *
      * @param nodes Nodes to enable
      */
-    private void enableNodes(final Node @NotNull... nodes) {
+    private void enableNodes(final Node @NotNull ... nodes) {
         for (final Node node : nodes) {
             node.setDisable(false);
         }

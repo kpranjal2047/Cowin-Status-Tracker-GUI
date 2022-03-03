@@ -1,15 +1,22 @@
-package cowin.util;
+package cowin.services;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * This class provides static methods for displaying error and info notification
- * using Java AWT {@link SystemTray}.
+ * This class provides static methods for displaying error and info notification using Java AWT
+ * {@link SystemTray}.
  *
  * @author Kumar Pranjal
  */
-public class TrayNotification {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class TrayNotificationService {
 
     private static TrayIcon trayIcon;
 
@@ -17,7 +24,8 @@ public class TrayNotification {
         if (SystemTray.isSupported()) {
             final SystemTray tray = SystemTray.getSystemTray();
             final Image image = Toolkit.getDefaultToolkit()
-                    .createImage(TrayNotification.class.getResource("/images/Icon_Logo.png"));
+                    .createImage(
+                            TrayNotificationService.class.getResource("/images/Icon_Logo.png"));
             trayIcon = new TrayIcon(image, "Cowin Status Tracker");
             trayIcon.setImageAutoSize(true);
             try {
@@ -25,12 +33,6 @@ public class TrayNotification {
             } catch (final AWTException ignored) {
             }
         }
-    }
-
-    /**
-     * Private constructor to prevent object creation externally.
-     */
-    private TrayNotification() {
     }
 
     /**

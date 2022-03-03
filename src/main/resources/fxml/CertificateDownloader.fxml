@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
-<?import javafx.scene.control.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Font?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="294.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="cowin.controllers.CertificateDownloaderController">
+    <JFXButton style="-fx-background-color: #b4b4ac;" layoutX="499.0" layoutY="40.0" onAction="#sendOtpButtonHandler" ripplerFill="#7d7d75" text="Send OTP" fx:id="sendOtpButton" />
+    <JFXButton style="-fx-background-color: #b4b4ac;" layoutX="499.0" layoutY="122.0" onAction="#verifyOtpButtonHandler" ripplerFill="#7d7d75" text="Verify OTP" fx:id="verifyOtpButton" />
+    <JFXButton style="-fx-background-color: #b4b4ac;" layoutX="499.0" layoutY="205.0" onAction="#downloadButtonHandler" ripplerFill="#7d7d75" text="Download" fx:id="downloadButton" />
+    <JFXTextField layoutX="228.0" layoutY="38.0" onMouseClicked="#phoneInputClickListener" prefHeight="25.0" prefWidth="246.0" promptText="10-digit phone number" fx:id="phoneNumberInput">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </JFXTextField>
+    <JFXTextField layoutX="228.0" layoutY="120.0" onMouseClicked="#otpInputClickListener" prefHeight="25.0" prefWidth="246.0" promptText="OTP" fx:id="otpInput">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </JFXTextField>
+    <JFXTextField layoutX="228.0" layoutY="203.0" onMouseClicked="#idInputClickListener" prefHeight="25.0" prefWidth="246.0" promptText="14-digit booking ID" fx:id="idInput">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </JFXTextField>
     <Label layoutX="57.0" layoutY="41.0" text="Phone Number:">
         <font>
             <Font name="Calibri" size="20.0" />
         </font>
     </Label>
-    <JFXTextField fx:id="phoneNumberInput" layoutX="228.0" layoutY="38.0" onMouseClicked="#phoneInputClickListener" prefHeight="25.0" prefWidth="246.0" promptText="10-digit phone number">
-        <font>
-            <Font size="14.0" />
-        </font>
-    </JFXTextField>
-    <JFXButton fx:id="sendOtpButton" layoutX="499.0" layoutY="40.0" onAction="#sendOtpButtonHandler" ripplerFill="#7d7d75" style="-fx-background-color: #b4b4ac;" text="Send OTP" />
-    <Label fx:id="phoneMsgLabel" layoutX="230.0" layoutY="72.0" prefHeight="23.0" prefWidth="340.0">
+    <Label layoutX="230.0" layoutY="72.0" prefHeight="23.0" prefWidth="340.0" fx:id="phoneMsgLabel">
         <font>
             <Font name="Calibri" size="14.0" />
         </font>
@@ -26,13 +39,7 @@
             <Font name="Calibri" size="20.0" />
         </font>
     </Label>
-    <JFXTextField fx:id="otpInput" layoutX="228.0" layoutY="120.0" onMouseClicked="#otpInputClickListener" prefHeight="25.0" prefWidth="246.0" promptText="OTP">
-        <font>
-            <Font size="14.0" />
-        </font>
-    </JFXTextField>
-    <JFXButton fx:id="verifyOtpButton" layoutX="499.0" layoutY="122.0" onAction="#verifyOtpButtonHandler" ripplerFill="#7d7d75" style="-fx-background-color: #b4b4ac;" text="Verify OTP" />
-    <Label fx:id="otpMsgLabel" layoutX="230.0" layoutY="155.0" prefHeight="23.0" prefWidth="340.0">
+    <Label layoutX="230.0" layoutY="155.0" prefHeight="23.0" prefWidth="340.0" fx:id="otpMsgLabel">
         <font>
             <Font name="Calibri" size="14.0" />
         </font>
@@ -42,13 +49,7 @@
             <Font name="Calibri" size="20.0" />
         </font>
     </Label>
-    <JFXTextField fx:id="idInput" layoutX="228.0" layoutY="203.0" onMouseClicked="#idInputClickListener" prefHeight="25.0" prefWidth="246.0" promptText="14-digit booking ID">
-        <font>
-            <Font size="14.0" />
-        </font>
-    </JFXTextField>
-    <JFXButton fx:id="downloadButton" layoutX="499.0" layoutY="205.0" onAction="#downloadButtonHandler" ripplerFill="#7d7d75" style="-fx-background-color: #b4b4ac;" text="Download" />
-    <Label fx:id="idMsgLabel" layoutX="228.0" layoutY="239.0" prefHeight="23.0" prefWidth="340.0">
+    <Label layoutX="228.0" layoutY="239.0" prefHeight="23.0" prefWidth="340.0" fx:id="idMsgLabel">
         <font>
             <Font name="Calibri" size="14.0" />
         </font>

@@ -10,8 +10,8 @@ import java.io.IOException;
 public class InvalidResponseException extends IOException {
 
     /**
-     * Constructs an {@code InvalidResponseException} with {@code null} as its error
-     * detail message.
+     * Constructs an {@code InvalidResponseException} with {@code null} as its error detail
+     * message.
      */
     public InvalidResponseException() {
         super();

@@ -6,30 +6,8 @@ import com.google.gson.JsonSyntaxException;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import cowin.exceptions.InvalidResponseException;
+import cowin.services.TrayNotificationService;
 import cowin.util.SHA256;
-import cowin.util.TrayNotification;
-import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Stage;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +21,28 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
+import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import lombok.Setter;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * CertificateDownloader FXML controller class
@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
  */
 public class CertificateDownloaderController implements Initializable {
 
+    private final Executor executor;
     @FXML
     private JFXTextField phoneNumberInput;
     @FXML
@@ -69,10 +70,9 @@ public class CertificateDownloaderController implements Initializable {
     private JFXButton downloadButton;
     @FXML
     private Label idMsgLabel;
-
-    private final Executor executor;
     private String txnId;
     private String token;
+    @Setter
     private Stage stage;
 
     /**
@@ -114,12 +114,14 @@ public class CertificateDownloaderController implements Initializable {
                 request.setHeader("Content-type", "application/json");
                 handleRequestAsync(request, this::sendOtpResponseHandler);
             } catch (final UnsupportedEncodingException e) {
-                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton,
+                        idMsgLabel);
             }
         } else {
             phoneMsgLabel.setText("Invalid phone number");
             phoneMsgLabel.setTextFill(Color.RED);
-            disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+            disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton,
+                    idMsgLabel);
         }
     }
 
@@ -157,7 +159,8 @@ public class CertificateDownloaderController implements Initializable {
      */
     @FXML
     private void downloadButtonHandler() {
-        final String HOME = "https://cdn-api.co-vin.in/api/v2/registration/certificate/public/download?beneficiary_reference_id=%s";
+        final String HOME =
+                "https://cdn-api.co-vin.in/api/v2/registration/certificate/public/download?beneficiary_reference_id=%s";
         final String id = idInput.getText();
         idMsgLabel.setText(null);
         if (id != null && !id.isEmpty()) {
@@ -207,11 +210,11 @@ public class CertificateDownloaderController implements Initializable {
     /**
      * Method to send HTTP request and get response asynchronously.
      *
-     * @param request  The {@link HttpRequestBase} subclass object with request
-     *                 details
+     * @param request  The {@link HttpRequestBase} subclass object with request details
      * @param callback Method to execute after successfully obtaining response
      */
-    private void handleRequestAsync(final HttpRequestBase request, final EventHandler<WorkerStateEvent> callback) {
+    private void handleRequestAsync(final HttpRequestBase request,
+            final EventHandler<WorkerStateEvent> callback) {
         final Task<CloseableHttpResponse> getResponseTask = new Task<>() {
             @Override
             protected CloseableHttpResponse call() throws Exception {
@@ -228,8 +231,7 @@ public class CertificateDownloaderController implements Initializable {
      * @param event {@link WorkerStateEvent} object containing response object
      */
     private void sendOtpResponseHandler(@NotNull final WorkerStateEvent event) {
-        @SuppressWarnings("unchecked")
-        final Worker<CloseableHttpResponse> worker = event.getSource();
+        @SuppressWarnings("unchecked") final Worker<CloseableHttpResponse> worker = event.getSource();
         try (CloseableHttpResponse response = worker.getValue()) {
             final int status = response.getStatusLine().getStatusCode();
             final HttpEntity entity = response.getEntity();
@@ -252,23 +254,29 @@ public class CertificateDownloaderController implements Initializable {
                     phoneMsgLabel.setText("Bad Request!");
                 }
                 phoneMsgLabel.setTextFill(Color.RED);
-                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton,
+                        idMsgLabel);
             } else if (status == 401) {
                 phoneMsgLabel.setText("Unauthorized Access!");
                 phoneMsgLabel.setTextFill(Color.RED);
-                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton,
+                        idMsgLabel);
             } else if (status == 500) {
                 phoneMsgLabel.setText("Server Error!");
                 phoneMsgLabel.setTextFill(Color.RED);
-                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton,
+                        idMsgLabel);
             } else {
                 phoneMsgLabel.setText("Unknown Error!");
                 phoneMsgLabel.setTextFill(Color.RED);
-                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+                disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton,
+                        idMsgLabel);
             }
         } catch (final InvalidResponseException e) {
-            TrayNotification.showErrorNotification("Error: Empty Response", "Cowin Status Tracker");
-            disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+            TrayNotificationService.showErrorNotification("Error: Empty Response",
+                    "Cowin Status Tracker");
+            disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton,
+                    idMsgLabel);
         } catch (final IOException ignored) {
 
         }
@@ -280,8 +288,7 @@ public class CertificateDownloaderController implements Initializable {
      * @param event {@link WorkerStateEvent} object containing response object
      */
     private void verifyOtpResponseHandler(@NotNull final WorkerStateEvent event) {
-        @SuppressWarnings("unchecked")
-        final Worker<CloseableHttpResponse> worker = event.getSource();
+        @SuppressWarnings("unchecked") final Worker<CloseableHttpResponse> worker = event.getSource();
         try (CloseableHttpResponse response = worker.getValue()) {
             final int status = response.getStatusLine().getStatusCode();
             final HttpEntity entity = response.getEntity();
@@ -327,7 +334,8 @@ public class CertificateDownloaderController implements Initializable {
                 disableNodes(idInput, downloadButton, idMsgLabel);
             }
         } catch (final InvalidResponseException e) {
-            TrayNotification.showErrorNotification("Error: Empty Response", "Cowin Status Tracker");
+            TrayNotificationService.showErrorNotification("Error: Empty Response",
+                    "Cowin Status Tracker");
             disableNodes(idInput, downloadButton, idMsgLabel);
         } catch (final IOException ignored) {
 
@@ -340,8 +348,7 @@ public class CertificateDownloaderController implements Initializable {
      * @param event {@link WorkerStateEvent} object containing response object
      */
     private void downloadResponseHandler(@NotNull final WorkerStateEvent event) {
-        @SuppressWarnings("unchecked")
-        final Worker<CloseableHttpResponse> worker = event.getSource();
+        @SuppressWarnings("unchecked") final Worker<CloseableHttpResponse> worker = event.getSource();
         try (CloseableHttpResponse response = worker.getValue()) {
             final int status = response.getStatusLine().getStatusCode();
             if (status == 200) {
@@ -353,7 +360,8 @@ public class CertificateDownloaderController implements Initializable {
                 if (entity != null) {
                     if (selectedFile != null) {
                         final InputStream stream = entity.getContent();
-                        Files.copy(stream, selectedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(stream, selectedFile.toPath(),
+                                StandardCopyOption.REPLACE_EXISTING);
                         idMsgLabel.setText("Certificate downloaded!");
                         idMsgLabel.setTextFill(Color.GREEN);
                     } else {
@@ -377,7 +385,8 @@ public class CertificateDownloaderController implements Initializable {
                 idMsgLabel.setTextFill(Color.RED);
             }
         } catch (final InvalidResponseException e) {
-            TrayNotification.showErrorNotification("Error: Empty Response", "Cowin Status Tracker");
+            TrayNotificationService.showErrorNotification("Error: Empty Response",
+                    "Cowin Status Tracker");
         } catch (final IOException ignored) {
 
         }
@@ -388,7 +397,7 @@ public class CertificateDownloaderController implements Initializable {
      *
      * @param nodes Nodes to disable
      */
-    private void disableNodes(final Node @NotNull... nodes) {
+    private void disableNodes(final Node @NotNull ... nodes) {
         for (final Node node : nodes) {
             if (node instanceof JFXTextField) {
                 ((JFXTextField) node).setText(null);
@@ -404,13 +413,9 @@ public class CertificateDownloaderController implements Initializable {
      *
      * @param nodes Nodes to enable
      */
-    private void enableNodes(final Node @NotNull... nodes) {
+    private void enableNodes(final Node @NotNull ... nodes) {
         for (final Node node : nodes) {
             node.setDisable(false);
         }
-    }
-
-    public void setStage(final Stage stage) {
-        this.stage = stage;
     }
 }

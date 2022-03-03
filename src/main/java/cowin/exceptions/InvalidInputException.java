@@ -10,11 +10,10 @@ import java.io.IOException;
 public class InvalidInputException extends IOException {
 
     /**
-     * Constructs an {@code InvalidInputException} with the specified detail
-     * message.
+     * Constructs an {@code InvalidInputException} with the specified detail message.
      *
-     * @param message The detail message (which is saved for later retrieval by the
-     *                {@link #getMessage()} method)
+     * @param message The detail message (which is saved for later retrieval by the {@link
+     *                #getMessage()} method)
      */
     public InvalidInputException(final String message) {
         super(message);

@@ -10,8 +10,8 @@ import java.io.IOException;
 public class SecretsFileNotFoundException extends IOException {
 
     /**
-     * Constructs a {@code SecretsFileNotFoundException} with {@code null} as its
-     * error detail message.
+     * Constructs a {@code SecretsFileNotFoundException} with {@code null} as its error detail
+     * message.
      */
     public SecretsFileNotFoundException() {
         super();
