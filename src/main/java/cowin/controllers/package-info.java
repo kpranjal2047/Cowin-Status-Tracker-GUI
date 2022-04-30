@@ -1,4 +1,2 @@
-/**
- * This package contains FXML controller classes.
- */
+/** This package contains FXML controller classes. */
 package cowin.controllers;

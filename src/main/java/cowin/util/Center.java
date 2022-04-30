@@ -1,25 +1,23 @@
 package cowin.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
 /**
  * Class to represent vaccination centers.
  *
  * @author Kumar Pranjal
  */
-@Getter
-@AllArgsConstructor
+@Data
 public class Center {
 
-    private String centerName;
-    private int pinCode;
-    private Integer minAge;
-    private Integer maxAge;
-    private String vaccineName;
-    private String date;
-    private int dose1Count;
-    private int dose2Count;
-    private int precautionCount;
-    private String feeType;
+  private final String centerName;
+  private final Integer pinCode;
+  private final Integer minAge;
+  private final Integer maxAge;
+  private final String vaccineName;
+  private final String date;
+  private final Integer dose1Count;
+  private final Integer dose2Count;
+  private final Integer precautionCount;
+  private final String feeType;
 }

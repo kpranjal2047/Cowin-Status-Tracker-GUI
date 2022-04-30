@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "***** Building Project ******"
+./gradlew build
+status=$?
+exit $status

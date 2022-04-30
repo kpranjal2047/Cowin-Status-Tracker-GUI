@@ -1,4 +1,2 @@
-/**
- * This package contains {@link java.lang.Exception} subclasses used by the application.
- */
+/** This package contains {@link java.lang.Exception} subclasses used by the application. */
 package cowin.exceptions;

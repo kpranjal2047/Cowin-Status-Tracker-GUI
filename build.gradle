@@ -1,33 +1,63 @@
 plugins {
-    id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.9'
+	id 'application'
+	id 'org.openjfx.javafxplugin' version '0.0.9'
+	id "com.diffplug.spotless" version "6.5.0"
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    implementation 'com.jfoenix:jfoenix:9.0.10'
-    implementation 'com.google.code.gson:gson:2.9.0'
-    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-    implementation 'io.github.cdimascio:dotenv-java:2.2.3'
-    implementation 'com.twilio.sdk:twilio:8.25.1'
-    implementation 'org.slf4j:slf4j-nop:1.7.36'
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    compileOnly 'org.jetbrains:annotations:22.0.0'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+	implementation 'com.google.code.gson:gson:2.9.0'
+	implementation 'com.jfoenix:jfoenix:9.0.10'
+	implementation 'com.twilio.sdk:twilio:8.29.1'
+	implementation 'io.github.cdimascio:dotenv-java:2.2.3'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+	implementation 'org.slf4j:slf4j-nop:1.7.36'
+	compileOnly 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 javafx {
-    version = "17"
-    modules = ['javafx.controls', 'javafx.fxml']
+	version = "17"
+	modules = [
+		'javafx.controls',
+		'javafx.fxml'
+	]
 }
 
 run {
-    jvmArgs = [
-            "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
-    ]
+	jvmArgs = [
+		"--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+	]
+}
+
+spotless {
+	java {
+		importOrder()
+		removeUnusedImports()
+		googleJavaFormat()
+	}
+	groovyGradle {
+		target '**/*.gradle'
+		greclipse()
+	}
+	freshmark {
+		target '**/*.md'
+	}
+	format 'xml', {
+		target '**/*.fxml'
+		eclipseWtp('xml')
+	}
 }
 
 mainClassName = 'cowin.CowinMain'
+
+task installPreCommitGitHook(type: Copy){
+	from new File(rootProject.rootDir, 'scripts/pre-commit')
+	into { new File(rootProject.rootDir, '.git/hooks')}
+	fileMode 0775
+}
+
+build.dependsOn installPreCommitGitHook

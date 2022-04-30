@@ -6,8 +6,7 @@ import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 /**
  * This class provides static methods for displaying error and info notification using Java AWT
@@ -15,47 +14,47 @@ import lombok.NoArgsConstructor;
  *
  * @author Kumar Pranjal
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public class TrayNotificationService {
 
-    private static TrayIcon trayIcon;
+  private TrayIcon trayIcon;
 
-    static {
-        if (SystemTray.isSupported()) {
-            final SystemTray tray = SystemTray.getSystemTray();
-            final Image image = Toolkit.getDefaultToolkit()
-                    .createImage(
-                            TrayNotificationService.class.getResource("/images/Icon_Logo.png"));
-            trayIcon = new TrayIcon(image, "Cowin Status Tracker");
-            trayIcon.setImageAutoSize(true);
-            try {
-                tray.add(trayIcon);
-            } catch (final AWTException ignored) {
-            }
-        }
+  static {
+    if (SystemTray.isSupported()) {
+      final SystemTray tray = SystemTray.getSystemTray();
+      final Image image =
+          Toolkit.getDefaultToolkit()
+              .createImage(TrayNotificationService.class.getResource("/images/Icon_Logo.png"));
+      trayIcon = new TrayIcon(image, "Cowin Status Tracker");
+      trayIcon.setImageAutoSize(true);
+      try {
+        tray.add(trayIcon);
+      } catch (final AWTException ignored) {
+      }
     }
+  }
 
-    /**
-     * Static method for displaying info notifications.
-     *
-     * @param content Notification body
-     * @param header  Notification title
-     */
-    public static void showInfoNotification(final String content, final String header) {
-        if (SystemTray.isSupported()) {
-            trayIcon.displayMessage(header, content, MessageType.INFO);
-        }
+  /**
+   * Static method for displaying info notifications.
+   *
+   * @param content Notification body
+   * @param header Notification title
+   */
+  public void showInfoNotification(final String content, final String header) {
+    if (SystemTray.isSupported()) {
+      trayIcon.displayMessage(header, content, MessageType.INFO);
     }
+  }
 
-    /**
-     * Static method for displaying error notifications.
-     *
-     * @param content Notification body
-     * @param header  Notification title
-     */
-    public static void showErrorNotification(final String content, final String header) {
-        if (SystemTray.isSupported()) {
-            trayIcon.displayMessage(header, content, MessageType.ERROR);
-        }
+  /**
+   * Static method for displaying error notifications.
+   *
+   * @param content Notification body
+   * @param header Notification title
+   */
+  public void showErrorNotification(final String content, final String header) {
+    if (SystemTray.isSupported()) {
+      trayIcon.displayMessage(header, content, MessageType.ERROR);
     }
+  }
 }
