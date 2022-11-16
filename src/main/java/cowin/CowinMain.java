@@ -1,12 +1,15 @@
 package cowin;
 
-import java.util.Objects;
+import cowin.controllers.CowinGUIController;
+import cowin.util.ResourceLoader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.NonNull;
 
 /**
@@ -28,21 +31,22 @@ public class CowinMain extends Application {
   /** {@inheritDoc} */
   @Override
   public void start(@NonNull final Stage stage) throws Exception {
-    final Parent root =
-        FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/fxml/CowinGUI.fxml")));
-    stage.setScene(new Scene(root));
+    final FXMLLoader loader = new FXMLLoader(ResourceLoader.loadResource("fxml/CowinGUI.fxml"));
+    final Parent root = loader.load();
+    final CowinGUIController controller = loader.getController();
+    controller.setStage(stage);
+    final Scene scene = new Scene(root);
+    scene.setFill(Color.TRANSPARENT);
+    stage.setScene(scene);
     stage.setTitle("Cowin Status Tracker");
     stage
         .getIcons()
         .add(
             new Image(
-                Objects.requireNonNull(getClass().getResourceAsStream("/images/Icon_Logo.png")),
-                0,
-                0,
-                true,
-                true));
+                ResourceLoader.loadResourceAsStream("images/Icon_Logo.png"), 0, 0, true, true));
     stage.setResizable(false);
     stage.setOnCloseRequest(e -> System.exit(0));
+    stage.initStyle(StageStyle.TRANSPARENT);
     stage.show();
   }
 }

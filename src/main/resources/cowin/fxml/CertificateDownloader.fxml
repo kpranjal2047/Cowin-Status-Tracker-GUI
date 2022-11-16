@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.materialfx.font.MFXFontIcon?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="294.0" prefWidth="600.0"
+	styleClass="anchorPane" stylesheets="@../css/App.css"
+	xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="cowin.controllers.CertificateDownloaderController">
+	<HBox fx:id="windowHeader" alignment="CENTER_RIGHT"
+		prefHeight="50.0" prefWidth="600.0" spacing="10.0">
+		<padding>
+			<Insets right="10.0" />
+		</padding>
+		<MFXFontIcon fx:id="alwaysOnTopIcon"
+			description="mfx-circle" size="15.0" styleClass="always-on-top-icon" />
+		<MFXFontIcon fx:id="minimizeIcon" description="mfx-circle"
+			size="15.0" styleClass="minimize-icon" />
+		<MFXFontIcon fx:id="closeIcon" description="mfx-circle"
+			size="15.0" styleClass="close-icon" />
+	</HBox>
+	<MFXButton fx:id="sendOtpButton" buttonType="RAISED"
+		depthLevel="LEVEL1" focusTraversable="false" layoutX="496.0"
+		layoutY="59.0" onAction="#sendOtpButtonHandler" prefHeight="25.0"
+		prefWidth="78.0" rippleColor="#7d7d75" styleClass="general-button"
+		text="Send OTP" />
+	<MFXButton fx:id="verifyOtpButton" buttonType="RAISED"
+		depthLevel="LEVEL1" focusTraversable="false" layoutX="496.0"
+		layoutY="141.0" onAction="#verifyOtpButtonHandler" prefHeight="25.0"
+		prefWidth="78.0" rippleColor="#7d7d75" styleClass="general-button"
+		text="Verify OTP" />
+	<MFXButton fx:id="downloadButton" buttonType="RAISED"
+		depthLevel="LEVEL1" focusTraversable="false" layoutX="496.0"
+		layoutY="224.0" onAction="#downloadButtonHandler" prefHeight="25.0"
+		prefWidth="78.0" rippleColor="#7d7d75" styleClass="general-button"
+		text="Download" />
+	<MFXTextField fx:id="phoneNumberInput" layoutX="228.0"
+		layoutY="57.0" minHeight="30.0"
+		onMouseClicked="#phoneInputClickListener" prefHeight="30.0"
+		prefWidth="246.0" promptText="10-digit mobile number">
+		<font>
+			<Font size="14.0" />
+		</font>
+	</MFXTextField>
+	<MFXTextField fx:id="otpInput" layoutX="228.0"
+		layoutY="139.0" minHeight="30.0"
+		onMouseClicked="#otpInputClickListener" prefHeight="30.0"
+		prefWidth="246.0" promptText="OTP">
+		<font>
+			<Font size="14.0" />
+		</font>
+	</MFXTextField>
+	<MFXTextField fx:id="idInput" layoutX="228.0"
+		layoutY="222.0" minHeight="30.0"
+		onMouseClicked="#idInputClickListener" prefHeight="30.0"
+		prefWidth="246.0" promptText="14-digit booking ID">
+		<font>
+			<Font size="14.0" />
+		</font>
+	</MFXTextField>
+	<Label layoutX="55.0" layoutY="60.0" text="Mobile Number:">
+		<font>
+			<Font name="Calibri" size="20.0" />
+		</font>
+	</Label>
+	<Label fx:id="phoneMsgLabel" layoutX="230.0" layoutY="91.0"
+		prefHeight="23.0" prefWidth="340.0">
+		<font>
+			<Font name="Calibri" size="14.0" />
+		</font>
+	</Label>
+	<Label layoutX="102.0" layoutY="142.0" text="OTP:">
+		<font>
+			<Font name="Calibri" size="20.0" />
+		</font>
+	</Label>
+	<Label fx:id="otpMsgLabel" layoutX="230.0" layoutY="174.0"
+		prefHeight="23.0" prefWidth="340.0">
+		<font>
+			<Font name="Calibri" size="14.0" />
+		</font>
+	</Label>
+	<Label layoutX="26.0" layoutY="225.0"
+		text="Beneficiary/Booking ID:">
+		<font>
+			<Font name="Calibri" size="20.0" />
+		</font>
+	</Label>
+	<Label fx:id="idMsgLabel" layoutX="228.0" layoutY="258.0"
+		prefHeight="23.0" prefWidth="340.0">
+		<font>
+			<Font name="Calibri" size="14.0" />
+		</font>
+	</Label>
+</AnchorPane>

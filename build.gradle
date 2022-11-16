@@ -1,36 +1,71 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
+	id 'java'
 	id 'application'
-	id 'org.openjfx.javafxplugin' version '0.0.9'
-	id "com.diffplug.spotless" version "6.5.0"
+	id 'org.beryx.jlink' version '2.24.1'
+	id 'com.diffplug.spotless' version '6.5.0'
 }
 
 repositories {
 	mavenCentral()
 }
 
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+def currentOS = DefaultNativePlatform.currentOperatingSystem
+def platform
+if (currentOS.isWindows()) {
+	platform = 'win'
+} else if (currentOS.isLinux()) {
+	platform = 'linux'
+} else if (currentOS.isMacOsX()) {
+	platform = 'mac'
+}
+def javaFxVersion = '17.0.2'
+
 dependencies {
-	implementation 'com.google.code.gson:gson:2.9.0'
-	implementation 'com.jfoenix:jfoenix:9.0.10'
-	implementation 'com.twilio.sdk:twilio:8.29.1'
-	implementation 'io.github.cdimascio:dotenv-java:2.2.3'
+	//noinspection GradlePackageUpdate
+	implementation "org.openjfx:javafx-base:${javaFxVersion}:${platform}"
+	//noinspection GradlePackageUpdate
+	implementation "org.openjfx:javafx-controls:${javaFxVersion}:${platform}"
+	//noinspection GradlePackageUpdate
+	implementation "org.openjfx:javafx-graphics:${javaFxVersion}:${platform}"
+	//noinspection GradlePackageUpdate
+	implementation "org.openjfx:javafx-fxml:${javaFxVersion}:${platform}"
+	implementation 'com.google.code.gson:gson:2.10'
+	implementation 'io.github.palexdev:materialfx:11.13.5'
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-	implementation 'org.slf4j:slf4j-nop:1.7.36'
+	implementation 'org.slf4j:slf4j-nop:2.0.3'
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
-javafx {
-	version = "17"
-	modules = [
-		'javafx.controls',
-		'javafx.fxml'
-	]
+application {
+	mainModule = 'cowin'
+	mainClass = 'cowin.CowinMain'
 }
 
-run {
-	jvmArgs = [
-		"--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+jlink {
+	options = [
+		'--strip-debug',
+		'--compress',
+		'2',
+		'--no-header-files',
+		'--no-man-pages'
 	]
+	launcher {
+		name = 'app'
+	}
+}
+
+jlinkZip {
+	group = 'distribution'
 }
 
 spotless {
@@ -50,9 +85,11 @@ spotless {
 		target '**/*.fxml'
 		eclipseWtp('xml')
 	}
+	format 'css', {
+		target '**/*.css'
+		prettier()
+	}
 }
-
-mainClassName = 'cowin.CowinMain'
 
 task installPreCommitGitHook(type: Copy){
 	from new File(rootProject.rootDir, 'scripts/pre-commit')

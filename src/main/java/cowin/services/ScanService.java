@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import cowin.util.Center;
+import cowin.alerts.TrayNotification;
+import cowin.constants.DoseNumber;
+import cowin.constants.VaccineName;
+import cowin.models.Center;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +21,7 @@ import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -72,7 +76,7 @@ public class ScanService extends ScheduledService<List<Center>> {
     @Cleanup final CloseableHttpClient client = HttpClients.createDefault();
     @Cleanup final CloseableHttpResponse response = client.execute(request);
     final int status = response.getStatusLine().getStatusCode();
-    if (status == 200) {
+    if (status == HttpStatus.SC_OK) {
       final HttpEntity entity = response.getEntity();
       if (Objects.nonNull(entity)) {
         final String jsonStr = EntityUtils.toString(entity);
@@ -83,101 +87,64 @@ public class ScanService extends ScheduledService<List<Center>> {
           final String name = center.getAsJsonPrimitive("name").getAsString();
           final int pinCode = center.getAsJsonPrimitive("pincode").getAsInt();
           final String fee = center.getAsJsonPrimitive("fee_type").getAsString();
-          if (Objects.nonNull(feeType) && !fee.equalsIgnoreCase(feeType)) {
+          if (Objects.nonNull(feeType) && !feeType.equals(fee)) {
             continue;
           }
           final JsonArray sessions = center.getAsJsonArray("sessions");
           for (final JsonElement s : sessions) {
             final JsonObject session = s.getAsJsonObject();
+            final String sessionDate = session.getAsJsonPrimitive("date").getAsString();
             final String vaccine = session.getAsJsonPrimitive("vaccine").getAsString();
-            if (Objects.nonNull(vaccineName) && !vaccine.equalsIgnoreCase(vaccineName)) {
+            if (Objects.nonNull(vaccineName) && !vaccineName.equals(vaccine)) {
               continue;
+            }
+            final int minAge = session.getAsJsonPrimitive("min_age_limit").getAsInt();
+            if (age < minAge) {
+              continue;
+            }
+            final int maxAge;
+            if (vaccine.equals(VaccineName.CORBEVAX)
+                || vaccine.equals(VaccineName.COVOVAX)
+                || vaccine.equals(VaccineName.ZYCOV_D)) {
+              maxAge = 14;
+            } else {
+              maxAge = 0;
             }
             final int totalCount = session.getAsJsonPrimitive("available_capacity").getAsInt();
             if (totalCount == 0) {
               continue;
             }
-            final String sessionDate = session.getAsJsonPrimitive("date").getAsString();
             final int dose1Count =
                 session.getAsJsonPrimitive("available_capacity_dose1").getAsInt();
             final int dose2Count =
                 session.getAsJsonPrimitive("available_capacity_dose2").getAsInt();
             final int precautionDoseCount = totalCount - dose1Count - dose2Count;
-            if (Objects.nonNull(doseNumber)) {
-              switch (doseNumber) {
-                case "Dose 1":
-                  if (dose1Count == 0) {
-                    continue;
-                  }
-                  break;
-                case "Dose 2":
-                  if (dose2Count == 0) {
-                    continue;
-                  }
-                  break;
-                case "Precaution dose":
-                  final int minAge = 60;
-                  if (precautionDoseCount > 0 && (age == -1 || age >= minAge)) {
-                    final Center available_center =
-                        new Center(
-                            name,
-                            pinCode,
-                            minAge,
-                            null,
-                            vaccine,
-                            sessionDate,
-                            dose1Count,
-                            dose2Count,
-                            precautionDoseCount,
-                            fee);
-                    out.add(available_center);
-                  }
-                  continue;
-              }
+            if (Objects.nonNull(doseNumber)
+                && ((doseNumber.equals(DoseNumber.DOSE_1) && dose1Count == 0)
+                    || (doseNumber.equals(DoseNumber.DOSE_2) && dose2Count == 0)
+                    || (doseNumber.equals(DoseNumber.PRECAUTION_DOSE)
+                        && precautionDoseCount == 0))) {
+              continue;
             }
-            final int minAge = session.getAsJsonPrimitive("min_age_limit").getAsInt();
-            if (age == -1 || age >= minAge) {
-              final boolean allowAllAge =
-                  session.getAsJsonPrimitive("allow_all_age").getAsBoolean();
-              if (allowAllAge) {
-                final Center available_center =
-                    new Center(
-                        name,
-                        pinCode,
-                        minAge,
-                        null,
-                        vaccine,
-                        sessionDate,
-                        dose1Count,
-                        dose2Count,
-                        precautionDoseCount,
-                        fee);
-                out.add(available_center);
-              } else {
-                final int maxAge = session.getAsJsonPrimitive("max_age_limit").getAsInt();
-                if (age == -1 || age <= maxAge) {
-                  final Center available_center =
-                      new Center(
-                          name,
-                          pinCode,
-                          minAge,
-                          maxAge,
-                          vaccine,
-                          sessionDate,
-                          dose1Count,
-                          dose2Count,
-                          precautionDoseCount,
-                          fee);
-                  out.add(available_center);
-                }
-              }
-            }
+            out.add(
+                new Center(
+                    name,
+                    pinCode,
+                    minAge,
+                    maxAge,
+                    vaccine,
+                    sessionDate,
+                    dose1Count,
+                    dose2Count,
+                    precautionDoseCount,
+                    fee));
           }
         }
       } else {
-        TrayNotificationService.showErrorNotification(
-            "Error: Empty Response", "Cowin Status Tracker");
+        TrayNotification.showErrorNotification("Some Error Occurred!", "Cowin Status Tracker");
       }
+    } else {
+      TrayNotification.showErrorNotification("Some Error Occurred!", "Cowin Status Tracker");
     }
     return out;
   }

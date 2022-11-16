@@ -1,5 +1,6 @@
-package cowin.services;
+package cowin.alerts;
 
+import cowin.util.ResourceLoader;
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.SystemTray;
@@ -15,7 +16,7 @@ import lombok.experimental.UtilityClass;
  * @author Kumar Pranjal
  */
 @UtilityClass
-public class TrayNotificationService {
+public class TrayNotification {
 
   private TrayIcon trayIcon;
 
@@ -24,7 +25,7 @@ public class TrayNotificationService {
       final SystemTray tray = SystemTray.getSystemTray();
       final Image image =
           Toolkit.getDefaultToolkit()
-              .createImage(TrayNotificationService.class.getResource("/images/Icon_Logo.png"));
+              .createImage(ResourceLoader.loadResource("images/Icon_Logo.png"));
       trayIcon = new TrayIcon(image, "Cowin Status Tracker");
       trayIcon.setImageAutoSize(true);
       try {

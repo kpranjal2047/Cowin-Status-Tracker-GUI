@@ -2,34 +2,43 @@ package cowin.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXToggleButton;
+import cowin.alerts.ErrorDialog;
+import cowin.alerts.TrayNotification;
+import cowin.constants.DoseNumber;
+import cowin.constants.VaccineName;
 import cowin.exceptions.InvalidInputException;
-import cowin.exceptions.SecretsFileNotFoundException;
+import cowin.models.Center;
 import cowin.services.ScanService;
 import cowin.services.ScanService.ScanType;
-import cowin.services.SmsNotificationService;
-import cowin.services.TrayNotificationService;
-import cowin.util.Center;
-import cowin.util.ErrorAlert;
+import cowin.util.ClassAccessor;
+import cowin.util.ResourceLoader;
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXCheckbox;
+import io.github.palexdev.materialfx.controls.MFXComboBox;
+import io.github.palexdev.materialfx.controls.MFXTableColumn;
+import io.github.palexdev.materialfx.controls.MFXTableView;
+import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.materialfx.controls.MFXToggleButton;
+import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
+import io.github.palexdev.materialfx.font.MFXFontIcon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Worker;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -39,15 +48,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
-import javafx.scene.layout.StackPane;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.SneakyThrows;
 
 /**
@@ -57,57 +67,79 @@ import lombok.SneakyThrows;
  */
 public class CowinGUIController implements Initializable {
 
-  private static JsonObject map;
+  private static JsonObject stateDistrictMap;
 
   static {
     try (final InputStreamReader inputStreamReader =
-            new InputStreamReader(
-                Objects.requireNonNull(
-                    CowinGUIController.class.getResourceAsStream("/data/District_ID.json")));
+            new InputStreamReader(ResourceLoader.loadResourceAsStream("data/District_ID.json"));
         final BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-      map = new Gson().fromJson(bufferedReader, JsonObject.class);
+      stateDistrictMap = new Gson().fromJson(bufferedReader, JsonObject.class);
     } catch (final IOException ignored) {
     }
   }
 
-  @FXML private StackPane stackPane;
+  @Setter private Stage stage;
+  @FXML private HBox windowHeader;
+  @FXML private MFXFontIcon closeIcon;
+  @FXML private MFXFontIcon minimizeIcon;
+  @FXML private MFXFontIcon alwaysOnTopIcon;
   @FXML private Label pinCodeLabel;
   @FXML private Label districtLabel;
-  @FXML private JFXToggleButton pinDistToggle;
-  @FXML private JFXTextField pinInput;
-  @FXML private JFXComboBox<String> stateInput;
-  @FXML private JFXComboBox<String> districtInput;
+  @FXML private MFXToggleButton pinDistToggle;
+  @FXML private MFXTextField pinInput;
+  @FXML private MFXComboBox<String> stateInput;
+  @FXML private MFXComboBox<String> districtInput;
   @FXML private Spinner<Integer> refreshInput;
-  @FXML private JFXToggleButton notificationToggle;
-  @FXML private JFXToggleButton smsToggle;
-  @FXML private JFXCheckBox ageCheckbox;
+  @FXML private MFXToggleButton notificationToggle;
+  @FXML private MFXCheckbox ageCheckbox;
   @FXML private Spinner<Integer> ageInput;
-  @FXML private JFXCheckBox vaccineCheckbox;
-  @FXML private JFXComboBox<String> vaccineInput;
-  @FXML private JFXCheckBox doseCheckbox;
-  @FXML private JFXComboBox<String> doseInput;
-  @FXML private JFXCheckBox feeCheckbox;
-  @FXML private JFXToggleButton feeInput;
-  @FXML private JFXButton startButton;
-  @FXML private JFXButton stopButton;
+  @FXML private MFXCheckbox vaccineCheckbox;
+  @FXML private MFXComboBox<String> vaccineInput;
+  @FXML private MFXCheckbox doseCheckbox;
+  @FXML private MFXComboBox<String> doseInput;
+  @FXML private MFXCheckbox feeCheckbox;
+  @FXML private MFXToggleButton feeInput;
+  @FXML private MFXButton startButton;
+  @FXML private MFXButton stopButton;
   @FXML private Label statusLabel;
-  @FXML private TableView<Center> resultTable;
-  @FXML private TableColumn<Center, String> centerNameColumn;
-  @FXML private TableColumn<Center, Integer> pinCodeColumn;
-  @FXML private TableColumn<Center, Integer> minAgeColumn;
-  @FXML private TableColumn<Center, Integer> maxAgeColumn;
-  @FXML private TableColumn<Center, String> vaccineColumn;
-  @FXML private TableColumn<Center, String> dateColumn;
-  @FXML private TableColumn<Center, Integer> dose1Column;
-  @FXML private TableColumn<Center, Integer> dose2Column;
-  @FXML private TableColumn<Center, Integer> precautionDoseColumn;
-  @FXML private TableColumn<Center, String> feeTypeColumn;
+  @FXML private MFXTableView<Center> resultTable;
   private ScanService scanService;
-  private SmsNotificationService smsService;
+  private double xOffset;
+  private double yOffset;
 
   /** {@inheritDoc} */
   @Override
   public void initialize(final URL url, final ResourceBundle rb) {
+    closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
+    minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setIconified(true));
+    alwaysOnTopIcon.addEventHandler(
+        MouseEvent.MOUSE_CLICKED,
+        event -> {
+          boolean newVal = !stage.isAlwaysOnTop();
+          alwaysOnTopIcon.pseudoClassStateChanged(
+              PseudoClass.getPseudoClass("always-on-top"), newVal);
+          stage.setAlwaysOnTop(newVal);
+        });
+    final Tooltip closeTooltip = new Tooltip("Close");
+    closeTooltip.setShowDelay(Duration.seconds(0.5));
+    Tooltip.install(closeIcon, closeTooltip);
+    final Tooltip minimizeTooltip = new Tooltip("Minimize");
+    closeTooltip.setShowDelay(Duration.seconds(0.5));
+    Tooltip.install(minimizeIcon, minimizeTooltip);
+    final Tooltip alwaysOnTopTooltip = new Tooltip("Always on Top");
+    closeTooltip.setShowDelay(Duration.seconds(0.5));
+    Tooltip.install(alwaysOnTopIcon, alwaysOnTopTooltip);
+    windowHeader.setOnMousePressed(
+        event -> {
+          xOffset = stage.getX() - event.getScreenX();
+          yOffset = stage.getY() - event.getScreenY();
+        });
+    windowHeader.setOnMouseDragged(
+        event -> {
+          stage.setX(event.getScreenX() + xOffset);
+          stage.setY(event.getScreenY() + yOffset);
+        });
+
     fillStates();
     fillVaccineNames();
     fillDoseNumbers();
@@ -149,21 +181,6 @@ public class CowinGUIController implements Initializable {
     final String state = stateInput.getValue();
     fillDistricts(state);
   }
-
-  /** This method is called when 'Receive SMS' toggle is switched. */
-  @FXML
-  private void smsChangeHandler() {
-    if (smsToggle.isSelected()) {
-      try {
-        smsService = new SmsNotificationService();
-      } catch (final SecretsFileNotFoundException e) {
-        smsToggle.setSelected(false);
-        final ErrorAlert alert = new ErrorAlert(stackPane, "Secrets file (secrets.env) not found!");
-        alert.show();
-      }
-    }
-  }
-
   /** This method enables/disables age input when age checkbox is selected/deselected. */
   @FXML
   private void ageCheckBoxHandler() {
@@ -193,11 +210,16 @@ public class CowinGUIController implements Initializable {
   /** This method is called when Start button is clicked. */
   @FXML
   private void startButtonHandler() {
-    int pinOrDistId;
+    final int pinOrDistId;
     if (pinDistToggle.isSelected()) {
       final String state = stateInput.getValue();
+      if (Objects.isNull(state)) {
+        final ErrorDialog alert = new ErrorDialog(stage, "Please select a state.");
+        alert.showDialog();
+        return;
+      }
       final String district = districtInput.getValue();
-      pinOrDistId = map.getAsJsonObject(state).getAsJsonPrimitive(district).getAsInt();
+      pinOrDistId = stateDistrictMap.getAsJsonObject(state).getAsJsonPrimitive(district).getAsInt();
     } else {
       final String pin = pinInput.getText();
       if (Pattern.matches("[1-9]\\d{5}", pin)) {
@@ -205,60 +227,52 @@ public class CowinGUIController implements Initializable {
       } else {
         final String errMsg =
             pin.isEmpty() ? "Please enter 6-digit PIN code" : "Invalid PIN Code - " + pin;
-        final ErrorAlert alert = new ErrorAlert(stackPane, errMsg);
-        alert.show();
+        final ErrorDialog alert = new ErrorDialog(stage, errMsg);
+        alert.showDialog();
         return;
       }
     }
 
-    int age;
+    int age = Integer.MAX_VALUE;
     if (ageCheckbox.isSelected()) {
       try {
         age = Integer.parseInt(ageInput.getEditor().getText());
         if (age < 0 || age > 100) {
           throw new InvalidInputException("Age out of range\nExpected range [0 - 100]");
         }
-      } catch (NumberFormatException | InvalidInputException e) {
-        final ErrorAlert alert = new ErrorAlert(stackPane, "Invalid age value - " + e.getMessage());
-        alert.show();
+      } catch (final NumberFormatException | InvalidInputException e) {
+        final ErrorDialog alert = new ErrorDialog(stage, "Invalid age value - " + e.getMessage());
+        alert.showDialog();
         ageInput.getValueFactory().setValue(18);
         return;
       }
-    } else {
-      age = -1;
     }
 
-    String vaccineName;
+    String vaccineName = null;
     if (vaccineCheckbox.isSelected()) {
       vaccineName = vaccineInput.getValue();
-    } else {
-      vaccineName = null;
     }
 
-    String doseNumber;
+    String doseNumber = null;
     if (doseCheckbox.isSelected()) {
       doseNumber = doseInput.getValue();
-    } else {
-      doseNumber = null;
     }
 
-    String feeType;
+    String feeType = null;
     if (feeCheckbox.isSelected()) {
       feeType = feeInput.isSelected() ? "Paid" : "Free";
-    } else {
-      feeType = null;
     }
 
-    int duration;
+    final int duration;
     try {
       duration = Integer.parseInt(refreshInput.getEditor().getText());
       if (duration < 3 || duration > 300) {
         throw new InvalidInputException("Duration out of range\nExpected range [3 - 300]");
       }
-    } catch (NumberFormatException | InvalidInputException e) {
-      final ErrorAlert alert =
-          new ErrorAlert(stackPane, "Invalid refresh duration value - " + e.getMessage());
-      alert.show();
+    } catch (final NumberFormatException | InvalidInputException e) {
+      final ErrorDialog alert =
+          new ErrorDialog(stage, "Invalid refresh duration value - " + e.getMessage());
+      alert.showDialog();
       refreshInput.getValueFactory().setValue(60);
       return;
     }
@@ -281,15 +295,14 @@ public class CowinGUIController implements Initializable {
         feeCheckbox,
         feeInput);
 
-    if (pinDistToggle.isSelected()) {
-      scanService =
-          new ScanService(
-              ScanType.DISTRICT_SCAN, pinOrDistId, age, vaccineName, doseNumber, feeType);
-    } else {
-      scanService =
-          new ScanService(
-              ScanType.PIN_CODE_SCAN, pinOrDistId, age, vaccineName, doseNumber, feeType);
-    }
+    scanService =
+        new ScanService(
+            pinDistToggle.isSelected() ? ScanType.DISTRICT_SCAN : ScanType.PIN_CODE_SCAN,
+            pinOrDistId,
+            age,
+            vaccineName,
+            doseNumber,
+            feeType);
     scanService.setPeriod(Duration.seconds(duration));
     scanService.setOnSucceeded(this::updateResults);
     scanService.start();
@@ -324,23 +337,21 @@ public class CowinGUIController implements Initializable {
   @SneakyThrows(IOException.class)
   private void downloadButtonHandler() {
     final FXMLLoader loader =
-        new FXMLLoader(
-            Objects.requireNonNull(getClass().getResource("/fxml/CertificateDownloader.fxml")));
+        new FXMLLoader(ResourceLoader.loadResource("fxml/CertificateDownloader.fxml"));
     final Parent root = loader.load();
     final CertificateDownloaderController controller = loader.getController();
     final Stage stage = new Stage();
-    stage.setScene(new Scene(root));
+    final Scene scene = new Scene(root);
+    scene.setFill(Color.TRANSPARENT);
+    stage.setScene(scene);
     stage.setTitle("Download Certificate");
     stage
         .getIcons()
         .add(
             new Image(
-                Objects.requireNonNull(getClass().getResourceAsStream("/images/Icon_Logo.png")),
-                0,
-                0,
-                true,
-                true));
+                ResourceLoader.loadResourceAsStream("images/Icon_Logo.png"), 0, 0, true, true));
     stage.setResizable(false);
+    stage.initStyle(StageStyle.TRANSPARENT);
     controller.setStage(stage);
     stage.show();
   }
@@ -351,11 +362,9 @@ public class CowinGUIController implements Initializable {
    * @see #fillDistricts(String)
    */
   private void fillStates() {
-    final List<String> list = new ArrayList<>(map.keySet());
+    final List<String> list = new ArrayList<>(stateDistrictMap.keySet());
     Collections.sort(list);
     stateInput.setItems(FXCollections.observableList(list));
-    stateInput.setValue(list.get(0));
-    fillDistricts(list.get(0));
   }
 
   /**
@@ -365,7 +374,7 @@ public class CowinGUIController implements Initializable {
    * @see #stateChangeHandler()
    */
   private void fillDistricts(final String state) {
-    final List<String> list = new ArrayList<>(map.getAsJsonObject(state).keySet());
+    final List<String> list = new ArrayList<>(stateDistrictMap.getAsJsonObject(state).keySet());
     Collections.sort(list);
     districtInput.setItems(FXCollections.observableList(list));
     districtInput.setValue(list.get(0));
@@ -373,31 +382,56 @@ public class CowinGUIController implements Initializable {
 
   /** Method for filling vaccine names during initialization. */
   private void fillVaccineNames() {
-    final List<String> list = Arrays.asList("Covaxin", "Covishield", "Sputnik V");
+    final List<String> list = ClassAccessor.getStaticFieldValuesAsString(VaccineName.class);
     vaccineInput.setItems(FXCollections.observableList(list));
     vaccineInput.setValue(list.get(0));
   }
 
   /** Method for filling dose numbers during initialization. */
   private void fillDoseNumbers() {
-    final List<String> list = Arrays.asList("Dose 1", "Dose 2", "Precaution dose");
+    final List<String> list = ClassAccessor.getStaticFieldValuesAsString(DoseNumber.class);
     doseInput.setItems(FXCollections.observableList(list));
     doseInput.setValue(list.get(0));
   }
 
   /** Method to initialize results table during initialization. */
   private void initializeTable() {
-    resultTable.setPlaceholder(new Label("No vaccination centers found!"));
-    centerNameColumn.setCellValueFactory(new PropertyValueFactory<>("centerName"));
-    pinCodeColumn.setCellValueFactory(new PropertyValueFactory<>("pinCode"));
-    minAgeColumn.setCellValueFactory(new PropertyValueFactory<>("minAge"));
-    maxAgeColumn.setCellValueFactory(new PropertyValueFactory<>("maxAge"));
-    vaccineColumn.setCellValueFactory(new PropertyValueFactory<>("vaccineName"));
-    dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-    dose1Column.setCellValueFactory(new PropertyValueFactory<>("dose1Count"));
-    dose2Column.setCellValueFactory(new PropertyValueFactory<>("dose2Count"));
-    precautionDoseColumn.setCellValueFactory(new PropertyValueFactory<>("precautionCount"));
-    feeTypeColumn.setCellValueFactory(new PropertyValueFactory<>("feeType"));
+    final MFXTableColumn<Center> centerNameColumn =
+        createColumn("Center Name", Center::getCenterName);
+    final MFXTableColumn<Center> pinCodeColumn = createColumn("PIN Code", Center::getPinCode);
+    final MFXTableColumn<Center> minAgeColumn = createColumn("Min Age", Center::getMinAge);
+    final MFXTableColumn<Center> maxAgeColumn = createColumn("Max Age", Center::getMaxAge);
+    final MFXTableColumn<Center> vaccineColumn =
+        createColumn("Vaccine Name", Center::getVaccineName);
+    final MFXTableColumn<Center> dateColumn = createColumn("Date", Center::getDate);
+    final MFXTableColumn<Center> dose1Column = createColumn("Dose 1 Count", Center::getDose1Count);
+    final MFXTableColumn<Center> dose2Column = createColumn("Dose 2 Count", Center::getDose2Count);
+    final MFXTableColumn<Center> precautionDoseColumn =
+        createColumn("Precaution Dose", Center::getPrecautionDoseCount);
+    final MFXTableColumn<Center> feeTypeColumn = createColumn("Fee Type", Center::getFeeType);
+    centerNameColumn.setPrefWidth(200);
+    resultTable
+        .getTableColumns()
+        .addAll(
+            List.of(
+                centerNameColumn,
+                pinCodeColumn,
+                minAgeColumn,
+                maxAgeColumn,
+                vaccineColumn,
+                dateColumn,
+                dose1Column,
+                dose2Column,
+                precautionDoseColumn,
+                feeTypeColumn));
+  }
+
+  private <R extends Comparable<R>> @NonNull MFXTableColumn<Center> createColumn(
+      final String name, final Function<Center, R> getter) {
+    final MFXTableColumn<Center> tableColumn =
+        new MFXTableColumn<>(name, true, Comparator.comparing(getter));
+    tableColumn.setRowCellFactory(center -> new MFXTableRowCell<>(getter));
+    return tableColumn;
   }
 
   /**
@@ -413,15 +447,9 @@ public class CowinGUIController implements Initializable {
     resultTable.getItems().addAll(availableCenters);
     statusLabel.setText("Last Updated: " + LocalTime.now());
     final int numCenters = availableCenters.size();
-    if (numCenters > 0) {
-      if (notificationToggle.isSelected()) {
-        TrayNotificationService.showInfoNotification(
-            numCenters + " vaccination center(s) found!", "Cowin Status Tracker");
-      }
-      if (smsToggle.isSelected()) {
-        smsService.sendSms(
-            numCenters + " vaccination center(s) found! Please check Cowin Status Tracker.");
-      }
+    if (numCenters > 0 && notificationToggle.isSelected()) {
+      TrayNotification.showInfoNotification(
+          numCenters + " vaccination center(s) found!", "Cowin Status Tracker");
     }
   }
 

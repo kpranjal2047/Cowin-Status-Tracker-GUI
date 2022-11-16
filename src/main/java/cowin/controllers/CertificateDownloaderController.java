@@ -3,10 +3,10 @@ package cowin.controllers;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextField;
-import cowin.services.TrayNotificationService;
 import cowin.util.SHA256;
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.materialfx.font.MFXFontIcon;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,24 +24,30 @@ import java.util.regex.Pattern;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -53,59 +59,93 @@ import org.apache.http.util.EntityUtils;
  */
 public class CertificateDownloaderController implements Initializable {
 
-  private final Executor executor;
-  @FXML private JFXTextField phoneNumberInput;
+  @Setter private Stage stage;
+  @FXML private HBox windowHeader;
+  @FXML private MFXFontIcon closeIcon;
+  @FXML private MFXFontIcon minimizeIcon;
+  @FXML private MFXFontIcon alwaysOnTopIcon;
+  @FXML private MFXTextField phoneNumberInput;
   @FXML private Label phoneMsgLabel;
-  @FXML private JFXButton sendOtpButton;
-  @FXML private JFXTextField otpInput;
-  @FXML private JFXButton verifyOtpButton;
+  @FXML private MFXButton sendOtpButton;
+  @FXML private MFXTextField otpInput;
+  @FXML private MFXButton verifyOtpButton;
   @FXML private Label otpMsgLabel;
-  @FXML private JFXTextField idInput;
-  @FXML private JFXButton downloadButton;
+  @FXML private MFXTextField idInput;
+  @FXML private MFXButton downloadButton;
   @FXML private Label idMsgLabel;
+  private final Gson defaultGson;
+  private final Executor executor;
   private String txnId;
   private String token;
-  @Setter private Stage stage;
-
+  private double xOffset;
+  private double yOffset;
   /** Constructor */
   public CertificateDownloaderController() {
+    defaultGson = new Gson();
     executor =
         Executors.newCachedThreadPool(
-            runnable -> {
-              final Thread t = new Thread(runnable);
-              t.setDaemon(true);
-              return t;
-            });
+            runnable ->
+                new Thread(runnable) {
+                  {
+                    setDaemon(true);
+                  }
+                });
   }
 
   /** {@inheritDoc} */
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
-    disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
-    sendOtpButton.setDefaultButton(true);
+    closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.close());
+    minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setIconified(true));
+    alwaysOnTopIcon.addEventHandler(
+        MouseEvent.MOUSE_CLICKED,
+        event -> {
+          boolean newVal = !stage.isAlwaysOnTop();
+          alwaysOnTopIcon.pseudoClassStateChanged(
+              PseudoClass.getPseudoClass("always-on-top"), newVal);
+          stage.setAlwaysOnTop(newVal);
+        });
+    final Tooltip closeTooltip = new Tooltip("Close");
+    closeTooltip.setShowDelay(Duration.seconds(0.5));
+    Tooltip.install(closeIcon, closeTooltip);
+    final Tooltip minimizeTooltip = new Tooltip("Minimize");
+    closeTooltip.setShowDelay(Duration.seconds(0.5));
+    Tooltip.install(minimizeIcon, minimizeTooltip);
+    final Tooltip alwaysOnTopTooltip = new Tooltip("Always on Top");
+    closeTooltip.setShowDelay(Duration.seconds(0.5));
+    Tooltip.install(alwaysOnTopIcon, alwaysOnTopTooltip);
+    windowHeader.setOnMousePressed(
+        event -> {
+          xOffset = stage.getX() - event.getScreenX();
+          yOffset = stage.getY() - event.getScreenY();
+        });
+    windowHeader.setOnMouseDragged(
+        event -> {
+          stage.setX(event.getScreenX() + xOffset);
+          stage.setY(event.getScreenY() + yOffset);
+        });
+    fireSendOtpError(null);
   }
 
   /** This method is called when Send OTP button is clicked. */
   @FXML
   @SneakyThrows(UnsupportedEncodingException.class)
   private void sendOtpButtonHandler() {
+    fireSendOtpError(null);
     final String HOME = "https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP";
     final String phoneNo = phoneNumberInput.getText();
-    phoneMsgLabel.setText(null);
     if (Pattern.matches("[1-9]\\d{9}", phoneNo)) {
       final Map<String, String> json = new HashMap<>();
       json.put("mobile", phoneNo);
       final HttpPost request = new HttpPost(HOME);
-      request.setEntity(new StringEntity(new Gson().toJson(json)));
+      request.setEntity(new StringEntity(defaultGson.toJson(json)));
       request.setHeader(
           "User-Agent",
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
       request.setHeader("Content-type", "application/json");
       handleRequestAsync(request, this::sendOtpResponseHandler);
     } else {
-      phoneMsgLabel.setText("Invalid phone number");
-      phoneMsgLabel.setTextFill(Color.RED);
-      disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+      fireSendOtpError("Invalid phone number");
     }
   }
 
@@ -113,34 +153,32 @@ public class CertificateDownloaderController implements Initializable {
   @FXML
   @SneakyThrows(UnsupportedEncodingException.class)
   private void verifyOtpButtonHandler() {
+    fireVerifyOtpError(null);
     final String HOME = "https://cdn-api.co-vin.in/api/v2/auth/public/confirmOTP";
     final String otp = SHA256.encode(otpInput.getText());
-    otpMsgLabel.setText(null);
     if (Objects.nonNull(otp) && !otp.isEmpty()) {
       final Map<String, String> json = new HashMap<>();
       json.put("otp", otp);
       json.put("txnId", txnId);
       final HttpPost request = new HttpPost(HOME);
-      request.setEntity(new StringEntity(new Gson().toJson(json)));
+      request.setEntity(new StringEntity(defaultGson.toJson(json)));
       request.setHeader(
           "User-Agent",
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
       request.setHeader("Content-type", "application/json");
       handleRequestAsync(request, this::verifyOtpResponseHandler);
     } else {
-      otpMsgLabel.setText("Please enter OTP!");
-      otpMsgLabel.setTextFill(Color.RED);
-      disableNodes(idInput, downloadButton, idMsgLabel);
+      fireVerifyOtpError("Please enter OTP!");
     }
   }
 
   /** This method is called when Download button is clicked. */
   @FXML
   private void downloadButtonHandler() {
+    fireDownloadError(null);
     final String HOME =
         "https://cdn-api.co-vin.in/api/v2/registration/certificate/public/download?beneficiary_reference_id=%s";
     final String id = idInput.getText();
-    idMsgLabel.setText(null);
     if (Objects.nonNull(id) && !id.isEmpty()) {
       idMsgLabel.setText("Downloading...");
       idMsgLabel.setTextFill(Color.BLACK);
@@ -151,8 +189,7 @@ public class CertificateDownloaderController implements Initializable {
       request.setHeader("Authorization", "Bearer " + token);
       handleRequestAsync(request, this::downloadResponseHandler);
     } else {
-      idMsgLabel.setText("Please enter ID!");
-      idMsgLabel.setTextFill(Color.RED);
+      fireDownloadError("Please enter ID!");
     }
   }
 
@@ -183,11 +220,11 @@ public class CertificateDownloaderController implements Initializable {
   /**
    * Method to send HTTP request and get response asynchronously.
    *
-   * @param request The {@link HttpRequestBase} subclass object with request details
+   * @param request The {@link HttpUriRequest} subclass object with request details
    * @param callback Method to execute after successfully obtaining response
    */
   private void handleRequestAsync(
-      final HttpRequestBase request, final EventHandler<WorkerStateEvent> callback) {
+      final HttpUriRequest request, final EventHandler<WorkerStateEvent> callback) {
     final Task<CloseableHttpResponse> getResponseTask =
         new Task<>() {
           @Override
@@ -212,40 +249,31 @@ public class CertificateDownloaderController implements Initializable {
     @Cleanup final CloseableHttpResponse response = worker.getValue();
     final int status = response.getStatusLine().getStatusCode();
     final HttpEntity entity = response.getEntity();
-    if (status == 200) {
-      if (Objects.nonNull(entity)) {
-        final String jsonStr = EntityUtils.toString(entity);
-        final JsonObject json = new Gson().fromJson(jsonStr, JsonObject.class);
-        txnId = json.getAsJsonPrimitive("txnId").getAsString();
-        phoneMsgLabel.setText("OTP sent!");
-        phoneMsgLabel.setTextFill(Color.GREEN);
-        enableNodes(otpInput, verifyOtpButton, otpMsgLabel);
-        disableNodes(idInput, downloadButton, idMsgLabel);
-      } else {
-        TrayNotificationService.showErrorNotification(
-            "Error: Empty Response", "Cowin Status Tracker");
-        disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+    switch (status) {
+      case HttpStatus.SC_OK -> {
+        if (Objects.nonNull(entity)) {
+          final String jsonStr = EntityUtils.toString(entity);
+          final JsonObject json = defaultGson.fromJson(jsonStr, JsonObject.class);
+          txnId = json.getAsJsonPrimitive("txnId").getAsString();
+          phoneMsgLabel.setText("OTP sent!");
+          phoneMsgLabel.setTextFill(Color.GREEN);
+          enableNodes(otpInput, verifyOtpButton, otpMsgLabel);
+          otpInput.requestFocus();
+          otpInputClickListener();
+        } else {
+          fireSendOtpError("Some Error Occurred!");
+        }
       }
-    } else if (status == 400) {
-      if (Objects.nonNull(entity) && EntityUtils.toString(entity).equals("OTP Already Sent")) {
-        phoneMsgLabel.setText("OTP already sent! Try again after sometime.");
-      } else {
-        phoneMsgLabel.setText("Bad Request!");
+      case HttpStatus.SC_BAD_REQUEST -> {
+        if (Objects.nonNull(entity) && EntityUtils.toString(entity).equals("OTP Already Sent")) {
+          fireSendOtpError("OTP already sent! Try again after sometime.");
+        } else {
+          fireSendOtpError("Bad Request!");
+        }
       }
-      phoneMsgLabel.setTextFill(Color.RED);
-      disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
-    } else if (status == 401) {
-      phoneMsgLabel.setText("Unauthorized Access!");
-      phoneMsgLabel.setTextFill(Color.RED);
-      disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
-    } else if (status == 500) {
-      phoneMsgLabel.setText("Server Error!");
-      phoneMsgLabel.setTextFill(Color.RED);
-      disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
-    } else {
-      phoneMsgLabel.setText("Unknown Error!");
-      phoneMsgLabel.setTextFill(Color.RED);
-      disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+      case HttpStatus.SC_UNAUTHORIZED -> fireSendOtpError("Unauthorized Access!");
+      case HttpStatus.SC_INTERNAL_SERVER_ERROR -> fireSendOtpError("Server Error!");
+      default -> fireSendOtpError("Unknown Error!");
     }
   }
 
@@ -261,48 +289,42 @@ public class CertificateDownloaderController implements Initializable {
     @Cleanup final CloseableHttpResponse response = worker.getValue();
     final int status = response.getStatusLine().getStatusCode();
     final HttpEntity entity = response.getEntity();
-    if (status == 200) {
-      if (Objects.nonNull(entity)) {
-        final String jsonStr = EntityUtils.toString(entity);
-        final JsonObject json = new Gson().fromJson(jsonStr, JsonObject.class);
-        token = json.getAsJsonPrimitive("token").getAsString();
-        otpMsgLabel.setText("OTP verified!");
-        otpMsgLabel.setTextFill(Color.GREEN);
-        disableNodes(verifyOtpButton);
-        enableNodes(idInput, downloadButton, idMsgLabel);
-        otpInput.setEditable(false);
-      } else {
-        TrayNotificationService.showErrorNotification(
-            "Error: Empty Response", "Cowin Status Tracker");
-        disableNodes(idInput, downloadButton, idMsgLabel);
-      }
-    } else if (status == 400) {
-      if (Objects.nonNull(entity)) {
-        try {
+    switch (status) {
+      case HttpStatus.SC_OK -> {
+        if (Objects.nonNull(entity)) {
           final String jsonStr = EntityUtils.toString(entity);
-          final JsonObject json = new Gson().fromJson(jsonStr, JsonObject.class);
-          final String errorMsg = json.getAsJsonPrimitive("error").getAsString();
-          otpMsgLabel.setText(errorMsg);
-        } catch (IllegalArgumentException | JsonSyntaxException e) {
-          otpMsgLabel.setText("Bad Request!");
+          final JsonObject json = defaultGson.fromJson(jsonStr, JsonObject.class);
+          token = json.getAsJsonPrimitive("token").getAsString();
+          otpMsgLabel.setText("OTP verified!");
+          otpMsgLabel.setTextFill(Color.GREEN);
+          enableNodes(idInput, downloadButton, idMsgLabel);
+          final String newOtp = "*".repeat(otpInput.getText().length());
+          otpInput.setText(newOtp);
+          otpInput.setEditable(false);
+          disableNodes(verifyOtpButton);
+          idInput.requestFocus();
+          idInputClickListener();
+        } else {
+          fireVerifyOtpError("Some Error Occurred!");
         }
-      } else {
-        otpMsgLabel.setText("Bad Request!");
       }
-      otpMsgLabel.setTextFill(Color.RED);
-      disableNodes(idInput, downloadButton, idMsgLabel);
-    } else if (status == 401) {
-      otpMsgLabel.setText("Unauthorized Access!");
-      otpMsgLabel.setTextFill(Color.RED);
-      disableNodes(idInput, downloadButton, idMsgLabel);
-    } else if (status == 500) {
-      otpMsgLabel.setText("Server Error!");
-      otpMsgLabel.setTextFill(Color.RED);
-      disableNodes(idInput, downloadButton, idMsgLabel);
-    } else {
-      otpMsgLabel.setText("Unknown Error!");
-      otpMsgLabel.setTextFill(Color.RED);
-      disableNodes(idInput, downloadButton, idMsgLabel);
+      case HttpStatus.SC_BAD_REQUEST -> {
+        if (Objects.nonNull(entity)) {
+          try {
+            final String jsonStr = EntityUtils.toString(entity);
+            final JsonObject json = defaultGson.fromJson(jsonStr, JsonObject.class);
+            final String errorMsg = json.getAsJsonPrimitive("error").getAsString();
+            fireVerifyOtpError(errorMsg);
+          } catch (final IllegalArgumentException | JsonSyntaxException e) {
+            fireVerifyOtpError("Bad Request!");
+          }
+        } else {
+          fireVerifyOtpError("Bad Request!");
+        }
+      }
+      case HttpStatus.SC_UNAUTHORIZED -> fireVerifyOtpError("Unauthorized Access!");
+      case HttpStatus.SC_INTERNAL_SERVER_ERROR -> fireVerifyOtpError("Server Error!");
+      default -> fireVerifyOtpError("Unknown Error!");
     }
   }
 
@@ -315,9 +337,10 @@ public class CertificateDownloaderController implements Initializable {
   private void downloadResponseHandler(@NonNull final WorkerStateEvent event) {
     @SuppressWarnings("unchecked")
     final Worker<CloseableHttpResponse> worker = event.getSource();
-    try (final CloseableHttpResponse response = worker.getValue()) {
-      final int status = response.getStatusLine().getStatusCode();
-      if (status == 200) {
+    @Cleanup final CloseableHttpResponse response = worker.getValue();
+    final int status = response.getStatusLine().getStatusCode();
+    switch (status) {
+      case HttpStatus.SC_OK -> {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Vaccination Certificate");
         fileChooser.getExtensionFilters().add(new ExtensionFilter("PDF File", "*.pdf"));
@@ -330,27 +353,37 @@ public class CertificateDownloaderController implements Initializable {
             idMsgLabel.setText("Certificate downloaded!");
             idMsgLabel.setTextFill(Color.GREEN);
           } else {
-            idMsgLabel.setText("Aborted by user!");
-            idMsgLabel.setTextFill(Color.RED);
+            fireDownloadError("Aborted by user!");
           }
         } else {
-          TrayNotificationService.showErrorNotification(
-              "Error: Empty Response", "Cowin Status Tracker");
+          fireDownloadError("Some Error Occurred!");
         }
-      } else if (status == 400) {
-        idMsgLabel.setText("Bad Request!");
-        idMsgLabel.setTextFill(Color.RED);
-      } else if (status == 401) {
-        idMsgLabel.setText("Unauthorized Access!");
-        idMsgLabel.setTextFill(Color.RED);
-      } else if (status == 500) {
-        idMsgLabel.setText("Server Error!");
-        idMsgLabel.setTextFill(Color.RED);
-      } else {
-        idMsgLabel.setText("Unknown Error!");
-        idMsgLabel.setTextFill(Color.RED);
       }
+      case HttpStatus.SC_BAD_REQUEST -> fireDownloadError("Bad Request!");
+      case HttpStatus.SC_UNAUTHORIZED -> fireDownloadError("Unauthorized Access!");
+      case HttpStatus.SC_INTERNAL_SERVER_ERROR -> fireDownloadError("Server Error!");
+      default -> fireDownloadError("Unknown Error!");
     }
+  }
+
+  private void fireSendOtpError(final String message) {
+    phoneMsgLabel.setText(message);
+    phoneMsgLabel.setTextFill(Color.RED);
+    disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+    phoneNumberInput.requestFocus();
+  }
+
+  private void fireVerifyOtpError(final String message) {
+    otpMsgLabel.setText(message);
+    otpMsgLabel.setTextFill(Color.RED);
+    disableNodes(idInput, downloadButton, idMsgLabel);
+    otpInput.requestFocus();
+  }
+
+  private void fireDownloadError(final String message) {
+    idMsgLabel.setText(message);
+    idMsgLabel.setTextFill(Color.RED);
+    idInput.requestFocus();
   }
 
   /**
@@ -360,8 +393,8 @@ public class CertificateDownloaderController implements Initializable {
    */
   private void disableNodes(final Node @NonNull ... nodes) {
     for (final Node node : nodes) {
-      if (node instanceof JFXTextField) {
-        ((JFXTextField) node).setText(null);
+      if (node instanceof MFXTextField) {
+        ((MFXTextField) node).setText("");
       } else if (node instanceof Label) {
         ((Label) node).setText(null);
       }
