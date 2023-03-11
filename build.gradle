@@ -1,9 +1,8 @@
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
-
 plugins {
 	id 'java'
 	id 'application'
-	id 'org.beryx.jlink' version '2.24.1'
+	id 'org.openjfx.javafxplugin' version '0.0.13'
+	id 'org.beryx.jlink' version '2.25.0'
 	id 'com.diffplug.spotless' version '6.5.0'
 }
 
@@ -14,30 +13,11 @@ repositories {
 sourceCompatibility = '17'
 targetCompatibility = '17'
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
 }
 
-def currentOS = DefaultNativePlatform.currentOperatingSystem
-def platform
-if (currentOS.isWindows()) {
-	platform = 'win'
-} else if (currentOS.isLinux()) {
-	platform = 'linux'
-} else if (currentOS.isMacOsX()) {
-	platform = 'mac'
-}
-def javaFxVersion = '17.0.2'
-
 dependencies {
-	//noinspection GradlePackageUpdate
-	implementation "org.openjfx:javafx-base:${javaFxVersion}:${platform}"
-	//noinspection GradlePackageUpdate
-	implementation "org.openjfx:javafx-controls:${javaFxVersion}:${platform}"
-	//noinspection GradlePackageUpdate
-	implementation "org.openjfx:javafx-graphics:${javaFxVersion}:${platform}"
-	//noinspection GradlePackageUpdate
-	implementation "org.openjfx:javafx-fxml:${javaFxVersion}:${platform}"
 	implementation 'com.google.code.gson:gson:2.10'
 	implementation 'io.github.palexdev:materialfx:11.13.5'
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
@@ -51,7 +31,16 @@ application {
 	mainClass = 'cowin.CowinMain'
 }
 
+javafx {
+	version = '17.0.2'
+	modules = [
+		'javafx.controls',
+		'javafx.fxml'
+	]
+}
+
 jlink {
+	//noinspection GroovyAssignabilityCheck
 	options = [
 		'--strip-debug',
 		'--compress',
@@ -83,6 +72,7 @@ spotless {
 	}
 	format 'xml', {
 		target '**/*.fxml'
+		//noinspection GroovyAssignabilityCheck
 		eclipseWtp('xml')
 	}
 	format 'css', {
@@ -91,10 +81,12 @@ spotless {
 	}
 }
 
+//noinspection ConfigurationAvoidance
 task installPreCommitGitHook(type: Copy){
 	from new File(rootProject.rootDir, 'scripts/pre-commit')
 	into { new File(rootProject.rootDir, '.git/hooks')}
 	fileMode 0775
 }
 
+build.dependsOn spotlessApply
 build.dependsOn installPreCommitGitHook

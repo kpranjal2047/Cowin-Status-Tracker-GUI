@@ -1,3 +1,4 @@
+/** Main module for the application */
 module cowin {
   requires javafx.controls;
   requires javafx.fxml;

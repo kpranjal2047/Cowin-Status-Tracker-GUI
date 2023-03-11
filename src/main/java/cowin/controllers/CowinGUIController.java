@@ -5,13 +5,13 @@ import com.google.gson.JsonObject;
 import cowin.alerts.ErrorDialog;
 import cowin.alerts.TrayNotification;
 import cowin.constants.DoseNumber;
+import cowin.constants.ScanType;
 import cowin.constants.VaccineName;
 import cowin.exceptions.InvalidInputException;
 import cowin.models.Center;
 import cowin.services.ScanService;
-import cowin.services.ScanService.ScanType;
-import cowin.util.ClassAccessor;
 import cowin.util.ResourceLoader;
+import cowin.util.UIControl;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXCheckbox;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -42,7 +43,6 @@ import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -111,6 +111,7 @@ public class CowinGUIController implements Initializable {
   @Override
   public void initialize(final URL url, final ResourceBundle rb) {
     closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
+    //noinspection DuplicatedCode
     minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setIconified(true));
     alwaysOnTopIcon.addEventHandler(
         MouseEvent.MOUSE_CLICKED,
@@ -149,7 +150,7 @@ public class CowinGUIController implements Initializable {
     pinCodeLabel.setTextFill(Color.valueOf("#ee5c5c"));
     stateInput.setVisible(false);
     districtInput.setVisible(false);
-    disableNodes(stopButton, ageInput, vaccineInput, doseInput, feeInput);
+    UIControl.disableNodes(stopButton, ageInput, vaccineInput, doseInput, feeInput);
   }
 
   /** This method modifies GUI when "search by pin/district" toggle is switched. */
@@ -278,8 +279,8 @@ public class CowinGUIController implements Initializable {
     }
 
     startButton.setText("Running...");
-    enableNodes(stopButton);
-    disableNodes(
+    UIControl.enableNodes(stopButton);
+    UIControl.disableNodes(
         startButton,
         pinDistToggle,
         stateInput,
@@ -314,7 +315,7 @@ public class CowinGUIController implements Initializable {
     scanService.cancel();
     scanService.reset();
     startButton.setText("Start");
-    enableNodes(
+    UIControl.enableNodes(
         startButton,
         pinDistToggle,
         stateInput,
@@ -325,7 +326,7 @@ public class CowinGUIController implements Initializable {
         vaccineCheckbox,
         doseCheckbox,
         feeCheckbox);
-    disableNodes(stopButton);
+    UIControl.disableNodes(stopButton);
     ageInput.setDisable(!ageCheckbox.isSelected());
     vaccineInput.setDisable(!vaccineCheckbox.isSelected());
     doseInput.setDisable(!doseCheckbox.isSelected());
@@ -382,14 +383,15 @@ public class CowinGUIController implements Initializable {
 
   /** Method for filling vaccine names during initialization. */
   private void fillVaccineNames() {
-    final List<String> list = ClassAccessor.getStaticFieldValuesAsString(VaccineName.class);
+    final List<String> list =
+        Arrays.stream(VaccineName.values()).map(VaccineName::getValue).toList();
     vaccineInput.setItems(FXCollections.observableList(list));
     vaccineInput.setValue(list.get(0));
   }
 
   /** Method for filling dose numbers during initialization. */
   private void fillDoseNumbers() {
-    final List<String> list = ClassAccessor.getStaticFieldValuesAsString(DoseNumber.class);
+    final List<String> list = Arrays.stream(DoseNumber.values()).map(DoseNumber::getValue).toList();
     doseInput.setItems(FXCollections.observableList(list));
     doseInput.setValue(list.get(0));
   }
@@ -409,6 +411,7 @@ public class CowinGUIController implements Initializable {
     final MFXTableColumn<Center> precautionDoseColumn =
         createColumn("Precaution Dose", Center::getPrecautionDoseCount);
     final MFXTableColumn<Center> feeTypeColumn = createColumn("Fee Type", Center::getFeeType);
+    final MFXTableColumn<Center> fee = createColumn("Fee", Center::getFee);
     centerNameColumn.setPrefWidth(200);
     resultTable
         .getTableColumns()
@@ -423,7 +426,8 @@ public class CowinGUIController implements Initializable {
                 dose1Column,
                 dose2Column,
                 precautionDoseColumn,
-                feeTypeColumn));
+                feeTypeColumn,
+                fee));
   }
 
   private <R extends Comparable<R>> @NonNull MFXTableColumn<Center> createColumn(
@@ -450,28 +454,6 @@ public class CowinGUIController implements Initializable {
     if (numCenters > 0 && notificationToggle.isSelected()) {
       TrayNotification.showInfoNotification(
           numCenters + " vaccination center(s) found!", "Cowin Status Tracker");
-    }
-  }
-
-  /**
-   * Utility method to disable nodes
-   *
-   * @param nodes Nodes to disable
-   */
-  private void disableNodes(final Node @NonNull ... nodes) {
-    for (final Node node : nodes) {
-      node.setDisable(true);
-    }
-  }
-
-  /**
-   * Utility method to enable nodes
-   *
-   * @param nodes Nodes to enable
-   */
-  private void enableNodes(final Node @NonNull ... nodes) {
-    for (final Node node : nodes) {
-      node.setDisable(false);
     }
   }
 }

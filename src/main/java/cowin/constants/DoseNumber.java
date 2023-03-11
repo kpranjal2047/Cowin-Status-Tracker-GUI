@@ -1,12 +1,20 @@
 package cowin.constants;
 
-import lombok.experimental.UtilityClass;
+import lombok.Getter;
 
-@SuppressWarnings("unused")
-@UtilityClass
-public class DoseNumber {
+/**
+ * Enum containing all dose number as constants
+ *
+ * @author Kumar Pranjal
+ */
+public enum DoseNumber {
+  DOSE_1("Dose 1"),
+  DOSE_2("Dose 2"),
+  PRECAUTION_DOSE("Precaution dose");
 
-  public final String DOSE_1 = "Dose 1";
-  public final String DOSE_2 = "Dose 2";
-  public final String PRECAUTION_DOSE = "Precaution dose";
+  @Getter private final String value;
+
+  DoseNumber(String value) {
+    this.value = value;
+  }
 }

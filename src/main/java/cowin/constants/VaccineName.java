@@ -1,15 +1,23 @@
 package cowin.constants;
 
-import lombok.experimental.UtilityClass;
+import lombok.Getter;
 
-@SuppressWarnings("unused")
-@UtilityClass
-public class VaccineName {
+/**
+ * Enum containing all vaccine names as constants
+ *
+ * @author Kumar Pranjal
+ */
+public enum VaccineName {
+  COVISHIELD("COVISHIELD"),
+  COVAXIN("COVAXIN"),
+  SPUTNIK_V("SPUTNIK V"),
+  CORBEVAX("CORBEVAX"),
+  COVOVAX("COVOVAX"),
+  ZYCOV_D("ZYCOV D");
 
-  public final String COVISHIELD = "COVISHIELD";
-  public final String COVAXIN = "COVAXIN";
-  public final String SPUTNIK_V = "SPUTNIK V";
-  public final String CORBEVAX = "CORBEVAX";
-  public final String COVOVAX = "COVOVAX";
-  public final String ZYCOV_D = "ZYCOV D";
+  @Getter private final String value;
+
+  VaccineName(String value) {
+    this.value = value;
+  }
 }

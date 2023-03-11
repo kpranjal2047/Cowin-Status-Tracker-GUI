@@ -34,19 +34,19 @@
 	<Label layoutX="515.0" layoutY="28.0" text="Cowin Status Tracker"
 		underline="true">
 		<font>
-			<Font name="Calibri Italic" size="30.0" />
+			<Font size="30.0" />
 		</font>
 	</Label>
 	<Label fx:id="pinCodeLabel" layoutX="122.0" layoutY="113.0"
 		text="Search by PIN Code">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</Label>
 	<Label fx:id="districtLabel" layoutX="372.0" layoutY="113.0"
 		text="Search by district name">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</Label>
 	<MFXToggleButton fx:id="pinDistToggle"
@@ -76,7 +76,7 @@
 	<Label layoutX="166.0" layoutY="233.0"
 		text="Refresh Interval (sec):">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</Label>
 	<Spinner fx:id="refreshInput" editable="true" layoutX="362.0"
@@ -85,14 +85,14 @@
 		graphicTextGap="25.0" layoutX="230.0" layoutY="280.0" selected="true"
 		text="Show Notifications">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</MFXToggleButton>
 	<Separator layoutX="640.0" layoutY="105.0"
 		orientation="VERTICAL" prefHeight="225.0" />
 	<Label layoutX="741.0" layoutY="113.0" text="Apply filters:">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</Label>
 	<MFXCheckbox fx:id="doseCheckbox" layoutX="757.0"
@@ -137,12 +137,12 @@
 	</MFXCheckbox>
 	<Label layoutX="927.0" layoutY="301.0" text="Free">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</Label>
 	<Label layoutX="1039.0" layoutY="301.0" text="Paid">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</Label>
 	<MFXToggleButton fx:id="feeInput"
@@ -168,7 +168,7 @@
 		layoutY="404.0" AnchorPane.leftAnchor="347.0"
 		AnchorPane.rightAnchor="347.0">
 		<font>
-			<Font name="Calibri" size="16.0" />
+			<Font size="16.0" />
 		</font>
 	</Label>
 	<MFXTableView fx:id="resultTable" footerVisible="false"

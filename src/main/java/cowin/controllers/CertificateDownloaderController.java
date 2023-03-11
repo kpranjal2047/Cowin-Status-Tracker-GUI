@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import cowin.util.SHA256;
+import cowin.util.UIControl;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
@@ -28,7 +29,6 @@ import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
@@ -96,6 +96,7 @@ public class CertificateDownloaderController implements Initializable {
   @Override
   public void initialize(final URL location, final ResourceBundle resources) {
     closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.close());
+    //noinspection DuplicatedCode
     minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setIconified(true));
     alwaysOnTopIcon.addEventHandler(
         MouseEvent.MOUSE_CLICKED,
@@ -257,7 +258,7 @@ public class CertificateDownloaderController implements Initializable {
           txnId = json.getAsJsonPrimitive("txnId").getAsString();
           phoneMsgLabel.setText("OTP sent!");
           phoneMsgLabel.setTextFill(Color.GREEN);
-          enableNodes(otpInput, verifyOtpButton, otpMsgLabel);
+          UIControl.enableNodes(otpInput, verifyOtpButton, otpMsgLabel);
           otpInput.requestFocus();
           otpInputClickListener();
         } else {
@@ -297,11 +298,11 @@ public class CertificateDownloaderController implements Initializable {
           token = json.getAsJsonPrimitive("token").getAsString();
           otpMsgLabel.setText("OTP verified!");
           otpMsgLabel.setTextFill(Color.GREEN);
-          enableNodes(idInput, downloadButton, idMsgLabel);
+          UIControl.enableNodes(idInput, downloadButton, idMsgLabel);
           final String newOtp = "*".repeat(otpInput.getText().length());
           otpInput.setText(newOtp);
           otpInput.setEditable(false);
-          disableNodes(verifyOtpButton);
+          UIControl.disableNodes(verifyOtpButton);
           idInput.requestFocus();
           idInputClickListener();
         } else {
@@ -369,14 +370,15 @@ public class CertificateDownloaderController implements Initializable {
   private void fireSendOtpError(final String message) {
     phoneMsgLabel.setText(message);
     phoneMsgLabel.setTextFill(Color.RED);
-    disableNodes(otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
+    UIControl.disableNodes(
+        otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
     phoneNumberInput.requestFocus();
   }
 
   private void fireVerifyOtpError(final String message) {
     otpMsgLabel.setText(message);
     otpMsgLabel.setTextFill(Color.RED);
-    disableNodes(idInput, downloadButton, idMsgLabel);
+    UIControl.disableNodes(idInput, downloadButton, idMsgLabel);
     otpInput.requestFocus();
   }
 
@@ -384,32 +386,5 @@ public class CertificateDownloaderController implements Initializable {
     idMsgLabel.setText(message);
     idMsgLabel.setTextFill(Color.RED);
     idInput.requestFocus();
-  }
-
-  /**
-   * Utility method to disable nodes
-   *
-   * @param nodes Nodes to disable
-   */
-  private void disableNodes(final Node @NonNull ... nodes) {
-    for (final Node node : nodes) {
-      if (node instanceof MFXTextField) {
-        ((MFXTextField) node).setText("");
-      } else if (node instanceof Label) {
-        ((Label) node).setText(null);
-      }
-      node.setDisable(true);
-    }
-  }
-
-  /**
-   * Utility method to enable nodes
-   *
-   * @param nodes Nodes to enable
-   */
-  private void enableNodes(final Node @NonNull ... nodes) {
-    for (final Node node : nodes) {
-      node.setDisable(false);
-    }
   }
 }
