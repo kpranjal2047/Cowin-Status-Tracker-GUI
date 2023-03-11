@@ -21,4 +21,5 @@ public class Center {
   int dose2Count;
   int precautionDoseCount;
   String feeType;
+  String fee;
 }

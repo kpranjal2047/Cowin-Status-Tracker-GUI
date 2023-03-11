@@ -66,36 +66,36 @@
 	</MFXTextField>
 	<Label layoutX="55.0" layoutY="60.0" text="Mobile Number:">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</Label>
 	<Label fx:id="phoneMsgLabel" layoutX="230.0" layoutY="91.0"
 		prefHeight="23.0" prefWidth="340.0">
 		<font>
-			<Font name="Calibri" size="14.0" />
+			<Font size="14.0" />
 		</font>
 	</Label>
 	<Label layoutX="102.0" layoutY="142.0" text="OTP:">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</Label>
 	<Label fx:id="otpMsgLabel" layoutX="230.0" layoutY="174.0"
 		prefHeight="23.0" prefWidth="340.0">
 		<font>
-			<Font name="Calibri" size="14.0" />
+			<Font size="14.0" />
 		</font>
 	</Label>
 	<Label layoutX="26.0" layoutY="225.0"
 		text="Beneficiary/Booking ID:">
 		<font>
-			<Font name="Calibri" size="20.0" />
+			<Font size="20.0" />
 		</font>
 	</Label>
 	<Label fx:id="idMsgLabel" layoutX="228.0" layoutY="258.0"
 		prefHeight="23.0" prefWidth="340.0">
 		<font>
-			<Font name="Calibri" size="14.0" />
+			<Font size="14.0" />
 		</font>
 	</Label>
 </AnchorPane>

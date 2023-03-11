@@ -6,13 +6,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import cowin.alerts.TrayNotification;
 import cowin.constants.DoseNumber;
-import cowin.constants.VaccineName;
+import cowin.constants.ScanType;
 import cowin.models.Center;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -86,9 +88,18 @@ public class ScanService extends ScheduledService<List<Center>> {
           final JsonObject center = c.getAsJsonObject();
           final String name = center.getAsJsonPrimitive("name").getAsString();
           final int pinCode = center.getAsJsonPrimitive("pincode").getAsInt();
-          final String fee = center.getAsJsonPrimitive("fee_type").getAsString();
-          if (Objects.nonNull(feeType) && !feeType.equals(fee)) {
+          final String feeType = center.getAsJsonPrimitive("fee_type").getAsString();
+          if (Objects.nonNull(this.feeType) && !this.feeType.equals(feeType)) {
             continue;
+          }
+          final Map<String, String> fees = new HashMap<>();
+          if (feeType.equals("Paid")) {
+            final JsonArray vaccineFees = center.getAsJsonArray("vaccine_fees");
+            for (JsonElement vf : vaccineFees) {
+              final JsonObject vaccineFee = vf.getAsJsonObject();
+              fees.put(
+                  vaccineFee.get("vaccine").getAsString(), vaccineFee.get("fee").getAsString());
+            }
           }
           final JsonArray sessions = center.getAsJsonArray("sessions");
           for (final JsonElement s : sessions) {
@@ -103,12 +114,10 @@ public class ScanService extends ScheduledService<List<Center>> {
               continue;
             }
             final int maxAge;
-            if (vaccine.equals(VaccineName.CORBEVAX)
-                || vaccine.equals(VaccineName.COVOVAX)
-                || vaccine.equals(VaccineName.ZYCOV_D)) {
-              maxAge = 14;
+            if (session.getAsJsonPrimitive("allow_all_age").getAsBoolean()) {
+              maxAge = 100;
             } else {
-              maxAge = 0;
+              maxAge = session.getAsJsonPrimitive("max_age_limit").getAsInt();
             }
             final int totalCount = session.getAsJsonPrimitive("available_capacity").getAsInt();
             if (totalCount == 0) {
@@ -120,12 +129,13 @@ public class ScanService extends ScheduledService<List<Center>> {
                 session.getAsJsonPrimitive("available_capacity_dose2").getAsInt();
             final int precautionDoseCount = totalCount - dose1Count - dose2Count;
             if (Objects.nonNull(doseNumber)
-                && ((doseNumber.equals(DoseNumber.DOSE_1) && dose1Count == 0)
-                    || (doseNumber.equals(DoseNumber.DOSE_2) && dose2Count == 0)
-                    || (doseNumber.equals(DoseNumber.PRECAUTION_DOSE)
+                && ((doseNumber.equals(DoseNumber.DOSE_1.getValue()) && dose1Count == 0)
+                    || (doseNumber.equals(DoseNumber.DOSE_2.getValue()) && dose2Count == 0)
+                    || (doseNumber.equals(DoseNumber.PRECAUTION_DOSE.getValue())
                         && precautionDoseCount == 0))) {
               continue;
             }
+            final String fee = feeType.equals("Paid") ? fees.get(vaccine) : "NA";
             out.add(
                 new Center(
                     name,
@@ -137,6 +147,7 @@ public class ScanService extends ScheduledService<List<Center>> {
                     dose1Count,
                     dose2Count,
                     precautionDoseCount,
+                    feeType,
                     fee));
           }
         }
@@ -147,16 +158,5 @@ public class ScanService extends ScheduledService<List<Center>> {
       TrayNotification.showErrorNotification("Some Error Occurred!", "Cowin Status Tracker");
     }
     return out;
-  }
-
-  /**
-   * ScanType enum which can be used for defining scan type while creating a new {@link
-   * ScanService}.
-   */
-  public enum ScanType {
-    /** Used when scanning needs to be done using PIN code */
-    PIN_CODE_SCAN,
-    /** Used when scanning needs to be done using district name */
-    DISTRICT_SCAN
   }
 }
