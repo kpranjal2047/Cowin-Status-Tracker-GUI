@@ -45,7 +45,6 @@ public class CowinMain extends Application {
             new Image(
                 ResourceLoader.loadResourceAsStream("images/Icon_Logo.png"), 0, 0, true, true));
     stage.setResizable(false);
-    stage.setOnCloseRequest(e -> System.exit(0));
     stage.initStyle(StageStyle.TRANSPARENT);
     stage.show();
   }

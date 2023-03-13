@@ -1,8 +1,8 @@
 package cowin.util;
 
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
@@ -17,9 +17,9 @@ public class UIControl {
    */
   public void disableNodes(final Node @NonNull ... nodes) {
     for (final Node node : nodes) {
-      if (node instanceof TextField) {
-        ((TextField) node).setText("");
-      } else if (node instanceof Label) {
+      if (node.getClass().equals(MFXTextField.class)) {
+        ((MFXTextField) node).setText("");
+      } else if (node.getClass().equals(Label.class)) {
         ((Label) node).setText(null);
       }
       node.setDisable(true);

@@ -77,7 +77,8 @@ spotless {
 	}
 	format 'css', {
 		target '**/*.css'
-		prettier()
+		//noinspection GroovyAssignabilityCheck
+		eclipseWtp("css")
 	}
 }
 

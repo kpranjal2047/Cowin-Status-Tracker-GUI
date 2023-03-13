@@ -1,56 +1,56 @@
 * {
-  -custom-purple: #7a0ed9;
-  -custom-red: #ef6e6b;
-  -custom-yellow: #ffbf37;
+	-custom-purple: #7a0ed9;
+	-custom-red: #ef6e6b;
+	-custom-yellow: #ffbf37;
 }
 
 .anchorPane {
-  -fx-background-color: #faf8f8;
-  -fx-background-radius: 20;
-  -fx-border-color: -custom-purple;
-  -fx-border-radius: 20;
+	-fx-background-color: #faf8f8;
+	-fx-background-radius: 20;
+	-fx-border-color: -custom-purple;
+	-fx-border-radius: 20;
 }
 
 .close-icon {
-  -mfx-color: -custom-red;
-  -fx-opacity: 0.5;
+	-mfx-color: -custom-red;
+	-fx-opacity: 0.5;
 }
 
 .close-icon:hover {
-  -fx-opacity: 1;
+	-fx-opacity: 1;
 }
 
 .minimize-icon {
-  -mfx-color: -custom-yellow;
-  -fx-opacity: 0.5;
+	-mfx-color: -custom-yellow;
+	-fx-opacity: 0.5;
 }
 
 .minimize-icon:hover {
-  -fx-opacity: 1;
+	-fx-opacity: 1;
 }
 
 .always-on-top-icon {
-  -mfx-color: -custom-purple;
-  -fx-opacity: 0.5;
+	-mfx-color: -custom-purple;
+	-fx-opacity: 0.5;
 }
 
 .always-on-top-icon:hover {
-  -fx-opacity: 1;
+	-fx-opacity: 1;
 }
 
 /*noinspection CssInvalidPseudoSelector*/
 .always-on-top-icon:always-on-top {
-  -fx-opacity: 1;
+	-fx-opacity: 1;
 }
 
 .start-button {
-  -fx-background-color: #66cc66;
+	-fx-background-color: #66cc66;
 }
 
 .stop-button {
-  -fx-background-color: #cc6666;
+	-fx-background-color: #cc6666;
 }
 
 .general-button {
-  -fx-background-color: #b4b4ac;
+	-fx-background-color: #b4b4ac;
 }

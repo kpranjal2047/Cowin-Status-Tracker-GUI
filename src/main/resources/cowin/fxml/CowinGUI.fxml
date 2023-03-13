@@ -3,6 +3,8 @@
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXCheckbox?>
 <?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXSlider?>
 <?import io.github.palexdev.materialfx.controls.MFXTableView?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
@@ -16,7 +18,7 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="720.0" prefWidth="1280.0"
-	stylesheets="@../css/App.css" styleClass="anchorPane"
+	styleClass="anchorPane" stylesheets="@../css/App.css"
 	xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="cowin.controllers.CowinGUIController">
 	<HBox fx:id="windowHeader" alignment="CENTER_RIGHT"
@@ -52,20 +54,20 @@
 	<MFXToggleButton fx:id="pinDistToggle"
 		contentDisplay="GRAPHIC_ONLY" layoutX="293.0" layoutY="104.0"
 		onAction="#pinDistChangeHandler" prefWidth="74.0" />
-	<MFXComboBox fx:id="stateInput" layoutX="128.0"
+	<MFXFilterComboBox fx:id="stateInput" layoutX="128.0"
 		layoutY="166.0" minHeight="35.0" onAction="#stateChangeHandler"
 		prefWidth="206.0" promptText="State Name">
 		<font>
 			<Font size="14.0" />
 		</font>
-	</MFXComboBox>
-	<MFXComboBox fx:id="districtInput" layoutX="355.0"
-		layoutY="166.0" minHeight="35.0" prefWidth="206.0"
+	</MFXFilterComboBox>
+	<MFXFilterComboBox fx:id="districtInput"
+		layoutX="355.0" layoutY="166.0" minHeight="35.0" prefWidth="206.0"
 		promptText="District Name">
 		<font>
 			<Font size="14.0" />
 		</font>
-	</MFXComboBox>
+	</MFXFilterComboBox>
 	<MFXTextField fx:id="pinInput" alignment="CENTER"
 		layoutX="274.0" layoutY="166.0" minHeight="35.0" prefWidth="115.0"
 		promptText="PIN Code">
@@ -114,21 +116,21 @@
 			<Font size="14.0" />
 		</font>
 	</MFXCheckbox>
-	<Spinner fx:id="ageInput" editable="true" layoutX="900.0"
-		layoutY="205.0" prefHeight="25.0" prefWidth="206.0" />
+	<MFXSlider fx:id="ageInput" layoutX="900.0" layoutY="213.0"
+		prefHeight="5.0" prefWidth="206.0" />
 	<MFXCheckbox fx:id="vaccineCheckbox" layoutX="757.0"
 		layoutY="254.0" onAction="#vaccineCheckBoxHandler" text="Vaccine Name">
 		<font>
 			<Font size="14.0" />
 		</font>
 	</MFXCheckbox>
-	<MFXComboBox fx:id="vaccineInput" layoutX="900.0"
-		layoutY="244.0" minHeight="35.0" prefHeight="35.0" prefWidth="206.0"
-		promptText="Select Vaccine Name">
+	<MFXFilterComboBox fx:id="vaccineInput"
+		layoutX="900.0" layoutY="244.0" minHeight="35.0" prefHeight="35.0"
+		prefWidth="206.0" promptText="Select Vaccine Name">
 		<font>
 			<Font size="14.0" />
 		</font>
-	</MFXComboBox>
+	</MFXFilterComboBox>
 	<MFXCheckbox fx:id="feeCheckbox" layoutX="757.0"
 		layoutY="302.0" onAction="#feeCheckBoxHandler" text="Fee Type">
 		<font>
@@ -140,18 +142,18 @@
 			<Font size="20.0" />
 		</font>
 	</Label>
-	<Label layoutX="1039.0" layoutY="301.0" text="Paid">
+	<Label layoutX="1037.0" layoutY="302.0" text="Paid">
 		<font>
 			<Font size="20.0" />
 		</font>
 	</Label>
 	<MFXToggleButton fx:id="feeInput"
-		contentDisplay="GRAPHIC_ONLY" layoutX="972.0" layoutY="292.0"
+		contentDisplay="GRAPHIC_ONLY" layoutX="972.0" layoutY="296.0"
 		prefWidth="74.0" />
 	<MFXButton fx:id="startButton" buttonType="RAISED"
-		styleClass="start-button" defaultButton="true" layoutX="514.0"
-		layoutY="354.0" onAction="#startButtonHandler" rippleColor="#008d00"
-		text="Start">
+		defaultButton="true" layoutX="514.0" layoutY="354.0"
+		onAction="#startButtonHandler" rippleColor="#008d00"
+		styleClass="start-button" text="Start">
 		<font>
 			<Font size="15.0" />
 		</font>

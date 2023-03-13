@@ -15,6 +15,8 @@ import cowin.util.UIControl;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXCheckbox;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
+import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
+import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableView;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -35,7 +37,6 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Worker;
 import javafx.concurrent.WorkerStateEvent;
@@ -87,14 +88,14 @@ public class CowinGUIController implements Initializable {
   @FXML private Label districtLabel;
   @FXML private MFXToggleButton pinDistToggle;
   @FXML private MFXTextField pinInput;
-  @FXML private MFXComboBox<String> stateInput;
-  @FXML private MFXComboBox<String> districtInput;
+  @FXML private MFXFilterComboBox<String> stateInput;
+  @FXML private MFXFilterComboBox<String> districtInput;
   @FXML private Spinner<Integer> refreshInput;
   @FXML private MFXToggleButton notificationToggle;
   @FXML private MFXCheckbox ageCheckbox;
-  @FXML private Spinner<Integer> ageInput;
+  @FXML private MFXSlider ageInput;
   @FXML private MFXCheckbox vaccineCheckbox;
-  @FXML private MFXComboBox<String> vaccineInput;
+  @FXML private MFXFilterComboBox<String> vaccineInput;
   @FXML private MFXCheckbox doseCheckbox;
   @FXML private MFXComboBox<String> doseInput;
   @FXML private MFXCheckbox feeCheckbox;
@@ -110,7 +111,7 @@ public class CowinGUIController implements Initializable {
   /** {@inheritDoc} */
   @Override
   public void initialize(final URL url, final ResourceBundle rb) {
-    closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
+    closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> System.exit(0));
     //noinspection DuplicatedCode
     minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> stage.setIconified(true));
     alwaysOnTopIcon.addEventHandler(
@@ -146,7 +147,6 @@ public class CowinGUIController implements Initializable {
     fillDoseNumbers();
     initializeTable();
     refreshInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(3, 300, 60, 1));
-    ageInput.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 18, 1));
     pinCodeLabel.setTextFill(Color.valueOf("#ee5c5c"));
     stateInput.setVisible(false);
     districtInput.setVisible(false);
@@ -237,14 +237,14 @@ public class CowinGUIController implements Initializable {
     int age = Integer.MAX_VALUE;
     if (ageCheckbox.isSelected()) {
       try {
-        age = Integer.parseInt(ageInput.getEditor().getText());
+        age = (int) ageInput.getValue();
         if (age < 0 || age > 100) {
           throw new InvalidInputException("Age out of range\nExpected range [0 - 100]");
         }
       } catch (final NumberFormatException | InvalidInputException e) {
         final ErrorDialog alert = new ErrorDialog(stage, "Invalid age value - " + e.getMessage());
         alert.showDialog();
-        ageInput.getValueFactory().setValue(18);
+        ageInput.setValue(18);
         return;
       }
     }
