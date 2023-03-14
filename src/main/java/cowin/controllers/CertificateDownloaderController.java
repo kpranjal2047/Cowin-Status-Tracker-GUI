@@ -370,6 +370,7 @@ public class CertificateDownloaderController implements Initializable {
   private void fireSendOtpError(final String message) {
     phoneMsgLabel.setText(message);
     phoneMsgLabel.setTextFill(Color.RED);
+    UIControl.clearTextFromNodes(otpInput, otpMsgLabel, idInput, idMsgLabel);
     UIControl.disableNodes(
         otpInput, verifyOtpButton, otpMsgLabel, idInput, downloadButton, idMsgLabel);
     phoneNumberInput.requestFocus();
@@ -378,6 +379,7 @@ public class CertificateDownloaderController implements Initializable {
   private void fireVerifyOtpError(final String message) {
     otpMsgLabel.setText(message);
     otpMsgLabel.setTextFill(Color.RED);
+    UIControl.clearTextFromNodes(idInput, idMsgLabel);
     UIControl.disableNodes(idInput, downloadButton, idMsgLabel);
     otpInput.requestFocus();
   }

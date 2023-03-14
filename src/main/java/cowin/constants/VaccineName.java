@@ -10,10 +10,11 @@ import lombok.Getter;
 public enum VaccineName {
   COVISHIELD("COVISHIELD"),
   COVAXIN("COVAXIN"),
-  SPUTNIK_V("SPUTNIK V"),
   CORBEVAX("CORBEVAX"),
   COVOVAX("COVOVAX"),
-  ZYCOV_D("ZYCOV D");
+  SPUTNIK_V("SPUTNIK V"),
+  ZYCOV_D("ZYCOV D"),
+  INCOVACC("iNCOVACC");
 
   @Getter private final String value;
 
