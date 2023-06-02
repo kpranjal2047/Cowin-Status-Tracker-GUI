@@ -384,14 +384,14 @@ public class CowinGUIController implements Initializable {
   /** Method for filling vaccine names during initialization. */
   private void fillVaccineNames() {
     final List<String> list =
-        Arrays.stream(VaccineName.values()).map(VaccineName::getValue).toList();
+        Arrays.stream(VaccineName.values()).map(VaccineName::getName).toList();
     vaccineInput.setItems(FXCollections.observableList(list));
     vaccineInput.setValue(list.get(0));
   }
 
   /** Method for filling dose numbers during initialization. */
   private void fillDoseNumbers() {
-    final List<String> list = Arrays.stream(DoseNumber.values()).map(DoseNumber::getValue).toList();
+    final List<String> list = Arrays.stream(DoseNumber.values()).map(DoseNumber::getName).toList();
     doseInput.setItems(FXCollections.observableList(list));
     doseInput.setValue(list.get(0));
   }

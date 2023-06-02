@@ -16,9 +16,9 @@ public enum VaccineName {
   ZYCOV_D("ZYCOV D"),
   INCOVACC("iNCOVACC");
 
-  @Getter private final String value;
+  @Getter private final String name;
 
-  VaccineName(String value) {
-    this.value = value;
+  VaccineName(String name) {
+    this.name = name;
   }
 }
