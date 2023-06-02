@@ -129,13 +129,13 @@ public class ScanService extends ScheduledService<List<Center>> {
                 session.getAsJsonPrimitive("available_capacity_dose2").getAsInt();
             final int precautionDoseCount = totalCount - dose1Count - dose2Count;
             if (Objects.nonNull(doseNumber)
-                && ((doseNumber.equals(DoseNumber.DOSE_1.getValue()) && dose1Count == 0)
-                    || (doseNumber.equals(DoseNumber.DOSE_2.getValue()) && dose2Count == 0)
-                    || (doseNumber.equals(DoseNumber.PRECAUTION_DOSE.getValue())
+                && ((doseNumber.equals(DoseNumber.DOSE_1.getName()) && dose1Count == 0)
+                    || (doseNumber.equals(DoseNumber.DOSE_2.getName()) && dose2Count == 0)
+                    || (doseNumber.equals(DoseNumber.PRECAUTION_DOSE.getName())
                         && precautionDoseCount == 0))) {
               continue;
             }
-            final String fee = feeType.equals("Paid") ? fees.get(vaccine) : "NA";
+            final String fee = feeType.equals("Paid") ? fees.get(vaccine) : " ";
             out.add(
                 new Center(
                     name,

@@ -12,9 +12,9 @@ public enum DoseNumber {
   DOSE_2("Dose 2"),
   PRECAUTION_DOSE("Precaution dose");
 
-  @Getter private final String value;
+  @Getter private final String name;
 
-  DoseNumber(String value) {
-    this.value = value;
+  DoseNumber(String name) {
+    this.name = name;
   }
 }
